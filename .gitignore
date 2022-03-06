@@ -1,1 +1,5 @@
 .nvimlog
+bin/bundle
+bin/htmldiff
+bin/ldiff
+bin/rspec
