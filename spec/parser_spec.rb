@@ -43,5 +43,7 @@ describe Parser do
     expect(workout.exercises.length).to eq(1)
     expect(workout.exercises.first.name).to eq("Deadlift")
     expect(workout.exercises.first.sets.length).to eq(4)
+    expect(workout.exercises.first.sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
+    expect(workout.exercises.first.sets.map(&:reps)).to eq([8, 5, 5, 5])
   end
 end
