@@ -8,14 +8,14 @@ describe PRFinder do
     last_week = Date.today - 1.week
     last_week_workout_text = <<~WORKOUT
     # Deadlift
-    265x5x3
+    270x5x3
     WORKOUT
     last_week_workout = Parser.new.parse(last_week_workout_text, last_week)
 
     yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
     # Deadlift
-    270x5x3
+    265x5x3
     WORKOUT
     yesterday_workout = Parser.new.parse(yesterday_workout_text, yesterday)
 
@@ -32,7 +32,7 @@ describe PRFinder do
     expect(prs.first.exercise.name).to eq("Deadlift")
     expect(prs.first.reps).to eq(5)
     expect(prs.first.weight_lbs).to eq(270)
-    expect(prs.first.date).to eq(yesterday)
+    expect(prs.first.date).to eq(last_week)
 
     expect(prs.last.exercise.name).to eq("Deadlift")
     expect(prs.last.reps).to eq(3)

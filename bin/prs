@@ -7,6 +7,7 @@ require 'pr_finder'
 require 'parser'
 require 'exercise'
 require 'date'
+require 'pry'
 
 workouts = Dir.glob("#{ARGV[0]}/**/*.workout").map do |file_path|
   $stderr.puts file_path

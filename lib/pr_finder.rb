@@ -8,21 +8,23 @@ class PRFinder
   def prs
     # exercise name =>
     #   { reps => exercise_set }
-    best_sets = {}
+    best_to_date = {}
+    pr_sets = []
 
     workouts.each do |workout|
       workout.exercises.flat_map(&:sets)
         .filter {|e| !e.bodyweight && !e.duration_seconds }
         .each do |current_set|
           exercise_name = current_set.exercise.name
-          best_sets[exercise_name] ||= {}
-          existing_pr = best_sets[exercise_name].filter {|reps, pr_set| reps == current_set.reps}[1]
+          best_to_date[exercise_name] ||= {}
+          existing_pr = best_to_date[exercise_name][current_set.reps]
           if existing_pr.nil? || existing_pr.weight_lbs < current_set.weight_lbs
-            best_sets[exercise_name][current_set.reps] = current_set
+            best_to_date[exercise_name][current_set.reps] = current_set
+            pr_sets << current_set
           end
         end
     end
 
-    best_sets.values.flat_map(&:values).sort_by(&:date)
+    pr_sets.sort_by(&:date)
   end
 end
