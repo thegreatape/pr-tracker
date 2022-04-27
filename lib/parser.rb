@@ -5,9 +5,9 @@ class Parser
   # looks likes:
   # #Reverse ring fly
   EXERCISE_NAME_RE = /
-      \s*            # optional whitespace
-      \#(?<name>.*)  # pound sign followed by name of exercise
-      \s*            # optional whitespace
+      \s*               # optional whitespace
+      \#\s*(?<name>.*)  # pound sign followed by optional whitespace and name of exercise
+      \s*               # optional whitespace
     /x
 
   SETS_RE = /
@@ -20,8 +20,8 @@ class Parser
     )?
     /x
 
-  def parse(contents)
-    workout = Workout.new
+  def parse(contents, date)
+    workout = Workout.new(date)
     current_exercise = nil
 
     contents.split("\n").each do |line|
@@ -31,7 +31,7 @@ class Parser
       elsif match = SETS_RE.match(line)
         set_count = (match[:sets] || 1).to_i
         set_count.times do
-          current_exercise.sets << ExerciseSet.new(reps: match[:reps].to_i, weight_lbs: match[:weight].to_i)
+          current_exercise.sets << ExerciseSet.new(reps: match[:reps].to_i, weight_lbs: match[:weight].to_i, exercise: current_exercise, workout: workout)
         end
       else
         if !line.chomp.empty?
