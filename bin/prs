@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'pr_finder'
+require 'parser'
+require 'exercise'
+require 'date'
+
+workouts = Dir.glob("#{ARGV[0]}*/*/*.workout").map do |file_path|
+  year, month, day = file_path.split('/').last(3).map(&:to_i)
+  Parser.new.parse(File.read(file_path), Date.new(year, month, day))
+end
+
+puts PRFinder.new(workouts).prs

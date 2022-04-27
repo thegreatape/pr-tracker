@@ -21,6 +21,6 @@ class PRFinder
       end
     end
 
-    best_sets.values.flat_map(&:values)
+    best_sets.values.flat_map(&:values).sort_by(&:date)
   end
 end
