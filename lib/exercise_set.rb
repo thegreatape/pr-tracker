@@ -3,12 +3,16 @@ class ExerciseSet
   attr_reader :weight_lbs
   attr_reader :exercise
   attr_reader :workout
+  attr_reader :bodyweight
+  attr_reader :duration_seconds
 
-  def initialize(reps:, weight_lbs:, exercise:, workout:)
+  def initialize(exercise:, workout:, reps: nil, weight_lbs: nil, bodyweight: false, duration_seconds: nil)
     @reps = reps
     @weight_lbs = weight_lbs
     @exercise = exercise
     @workout = workout
+    @bodyweight = bodyweight
+    @duration_seconds = duration_seconds
   end
 
   def date
