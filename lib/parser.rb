@@ -35,7 +35,7 @@ class Parser
 
     contents.split("\n").each do |line|
       if match = EXERCISE_NAME_RE.match(line)
-        current_exercise = Exercise.new(match[:name])
+        current_exercise = Exercise.new(match[:name].squish.titleize)
         workout.exercises << current_exercise
       elsif match = SETS_RE.match(line)
         set_count = (match[:sets] || 1).to_i

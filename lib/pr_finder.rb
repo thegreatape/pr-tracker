@@ -27,18 +27,4 @@ class PRFinder
 
     pr_sets.sort_by(&:date)
   end
-
-  def prs_as_chart_data
-    prs.group_by {|s| s.exercise.name}.map do |exercise_name, pr_sets|
-      {
-        label: exercise_name,
-        data: pr_sets.map { |set|
-          {
-            x: set.date.to_time.to_i * 1000,
-            y: set.weight_lbs
-          }
-        }
-      }
-    end
-  end
 end

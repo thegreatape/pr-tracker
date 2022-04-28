@@ -7,6 +7,7 @@ require 'pr_finder'
 require 'parser'
 require 'exercise'
 require 'date'
+require 'chart_presenter'
 require 'active_support/all'
 
 workouts = Dir.glob("#{ARGV[0]}/**/*.workout").map do |file_path|
@@ -15,4 +16,6 @@ workouts = Dir.glob("#{ARGV[0]}/**/*.workout").map do |file_path|
   Parser.new.parse(File.read(file_path), Date.new(year, month, day))
 end
 
-puts "window.prData = #{PRFinder.new(workouts).prs_as_chart_data.to_json}"
+#chart_data = ChartPresenter.new(PRFinder.new(workouts).prs).as_chart_data
+#puts "window.prData = #{chart_data.to_json}"
+puts PRFinder.new(workouts).prs.map {|s| "|#{s.exercise.name}|"}.uniq.sort
