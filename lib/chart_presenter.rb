@@ -29,12 +29,8 @@ ChartPresenter = Struct.new(:prs) do
     "Yukon Bar Squat" => "Squat"
   }
 
-  def normalize(name)
-    SYNONYMS[name] || name
-  end
-
   def as_chart_data
-    prs.group_by {|s| s.exercise.name}.map do |exercise_name, pr_sets|
+    prs.group_by {|s| s.exercise.name }.map do |exercise_name, pr_sets|
       {
         label: exercise_name,
         data: pr_sets.map { |set|

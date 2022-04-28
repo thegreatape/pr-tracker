@@ -6,6 +6,8 @@ const displaylist = {
   "Safety Bar Squat": "#355834",
   "Squat": "#3C887E",
   "Trap Bar Deadlift": "#A17C6B",
+  "Log": "#7B1E7A",
+  "Romanian Deadlift": "#EA638C"
 }
 
 const filteredData = _.filter(window.prData, function(d) {return !!displaylist[d.label]})
