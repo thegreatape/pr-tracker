@@ -11,7 +11,6 @@ require 'chart_presenter'
 require 'active_support/all'
 
 workouts = Dir.glob("#{ARGV[0]}/**/*.workout").map do |file_path|
-  $stderr.puts file_path
   year, month, day = file_path.split('/').last(3).map(&:to_i)
   Parser.new.parse(File.read(file_path), Date.new(year, month, day))
 end
