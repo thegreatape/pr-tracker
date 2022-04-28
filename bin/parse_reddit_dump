@@ -12,15 +12,20 @@ def scrub(line)
 end
 
 def parse_main(line)
-  parts = scrub(line).split(/ \- |\: /)
-  return " XXX #{line}" if parts.length < 2
+  parts = scrub(line).split(/\s*\- |\: /)
+  if parts.length < 2
+    parts = [
+      scrub(line).split(/\s+/).reverse.drop(1).reverse.join(" "),
+      scrub(line).split(/\s+/).last
+    ]
+  end
 
   sets = parts[1].split(", ").map do |s|
     if s.include?("/")
       reps, weight = s.split("x")
       reps.split("/").map {|r|"#{weight.squish} x #{r}"}.join("\n")
     else
-      s.split("x").reverse.join(" x ")
+      s.squish.split("x").reverse.join(" x ")
     end
   end
 
@@ -38,17 +43,25 @@ doc.css(".entry").each do |entry|
   raw_content = entry.css(".usertext-body").map(&:content)
   lists = entry.css(".usertext-body ul")
   if lists.any?
-    puts "\n========== #{date} ===========\n\n"
+    content = []
     lists.css('li').each do |li|
       next if li.content.include?('e1RM')
       next if li.content =~ /\.|\?|'/
 
-      if li.content =~ /\d+x\d+/
-        puts parse_main(li.content)
+      if li.content =~ /\d+\s*x\s*\d+/
+        content << parse_main(li.content)
       elsif li.content.include?(",")
-        puts parse_accessories(li.content)
+        content << parse_accessories(li.content)
       else
-        puts " XXX #{li.content}"
+        #puts " XXX XXX #{li.content}"
+      end
+    end
+
+    if content.any?
+      year, month, day = date.to_s.split('-')
+      FileUtils.mkdir_p "#{ARGV[1]}/#{year}/#{month}"
+      File.open("#{ARGV[1]}/#{date.to_s.gsub('-', '/')}.workout", "w") do |f|
+        f.puts content.join("\n")
       end
     end
 
