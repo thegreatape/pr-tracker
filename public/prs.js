@@ -25,6 +25,26 @@ const config = {
   type: 'bubble',
   data: data,
   options: {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            // TODO actually use date-fns here
+            const date = context.formattedValue.split(', 12')[0].replace("(", "")
+
+            return [
+              context.label,
+              "-",
+              context.raw.reps,
+              "x",
+              context.raw.y + "lbs",
+              "-",
+              date
+            ].join(" ");
+          }
+        }
+      }
+    },
     scales: {
       x: {
         type: 'time',

@@ -6,7 +6,8 @@ ChartPresenter = Struct.new(:prs) do
         data: pr_sets.map { |set|
           {
             x: set.date.to_time.to_i * 1000,
-            y: set.weight_lbs
+            y: set.weight_lbs,
+            reps: set.reps
           }
         }
       }
