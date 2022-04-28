@@ -3,7 +3,7 @@ const displaylist = {
   "Deadlift": "#F0B67F",
   "Front Squat": "#5B7B7A",
   "Overhead Press": "#593F62",
-  "Safety Bar Squat": "#E0F2E9",
+  "Safety Bar Squat": "#355834",
   "Squat": "#3C887E",
   "Trap Bar Deadlift": "#A17C6B",
 }
@@ -14,16 +14,30 @@ const coloredData = _.map(filteredData, function(d) {
   return d
 })
 
-console.log(coloredData)
+const byRepRangeData = _.map(coloredData, function(d) {
+  return _.merge({}, d, {
+    data:  _.map(d.data, function(point) {
+      return _.merge({}, point, {
+        x: point.date,
+        y: point.reps
+      });
+    })
+  });
+});
 
-const data = {
-  datasets: coloredData
-  //datasets: window.prData
-};
+const byWeightData = _.map(coloredData, function(d) {
+  return _.merge({}, d, {
+    data:  _.map(d.data, function(point) {
+      return _.merge({}, point, {
+        x: point.date,
+        y: point.weight_lbs
+      });
+    })
+  });
+});
 
 const config = {
   type: 'bubble',
-  data: data,
   options: {
     plugins: {
       tooltip: {
@@ -37,7 +51,7 @@ const config = {
               "-",
               context.raw.reps,
               "x",
-              context.raw.y + "lbs",
+              context.raw.weight_lbs+ "lbs",
               "-",
               date
             ].join(" ");
@@ -56,7 +70,52 @@ const config = {
   }
 };
 
-const myChart = new Chart(
-  document.getElementById('myChart'),
-  config
+const repRangeChart = new Chart(
+  document.getElementById('byRepRange'),
+  _.merge({}, config, {
+    data: {
+      datasets: byRepRangeData,
+    },
+    options: {
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: 'Reps'
+          }
+        },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'PRs By Rep Range'
+        }
+      }
+    }
+  })
+);
+
+const weightChart = new Chart(
+  document.getElementById('byWeight'),
+  _.merge({}, config, {
+    data: {
+      datasets: byWeightData
+    },
+    options: {
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: 'Weight (lbs)'
+          }
+        },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'PRs By Weight'
+        }
+      }
+    }
+  })
 );

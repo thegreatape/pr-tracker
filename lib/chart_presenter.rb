@@ -5,8 +5,8 @@ ChartPresenter = Struct.new(:prs) do
         label: exercise_name,
         data: pr_sets.map { |set|
           {
-            x: set.date.to_time.to_i * 1000,
-            y: set.weight_lbs,
+            date: set.date.to_time.to_i * 1000,
+            weight_lbs: set.weight_lbs,
             reps: set.reps
           }
         }
