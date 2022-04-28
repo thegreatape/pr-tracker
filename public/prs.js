@@ -1,14 +1,22 @@
-const labels = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-];
+const displaylist = {
+  'Squat': 'yellow',
+  'Overhead Press': 'red',
+  'Overhead press': 'red',
+  'Front Squat': 'green',
+  'Front squat': 'green'
+}
+
+const filteredData = _.filter(window.prData, function(d) {return !!displaylist[d.label]})
+const coloredData = _.map(filteredData, function(d) {
+  d.backgroundColor = displaylist[d.label]
+  return d
+})
+
+console.log(coloredData)
 
 const data = {
-  datasets: window.prData
+  datasets: coloredData
+  //datasets: window.prData
 };
 
 const config = {
