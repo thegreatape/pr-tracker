@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'nokogiri'
+require 'date'
+require 'active_support/all'
+
+def scrub(line)
+  line.gsub(/(Supersetted with:|T\d|\(rep pr\))\s*/i, '')
+end
+
+def parse_main(line)
+  parts = scrub(line).split(/ \- |\: /)
+  return " XXX #{line}" if parts.length < 2
+
+  sets = parts[1].split(", ").map do |s|
+    if s.include?("/")
+      reps, weight = s.split("x")
+      reps.split("/").map {|r|"#{weight.squish} x #{r}"}.join("\n")
+    else
+      s.split("x").reverse.join(" x ")
+    end
+  end
+
+  "##{parts[0]}\n#{sets.join("\n")}\n\n"
+end
+
+def parse_accessories(line)
+  scrub(line).split(/,\s*/).map {|s| "##{s}"}.join("\n")
+end
+
+nope = File.open('nope.txt', 'w')
+doc = Nokogiri::HTML(File.read(ARGV[0]))
+doc.css(".entry").each do |entry|
+  date = Date.parse(entry.css("time")[0]['datetime'])
+  raw_content = entry.css(".usertext-body").map(&:content)
+  lists = entry.css(".usertext-body ul")
+  if lists.any?
+    puts "\n========== #{date} ===========\n\n"
+    lists.css('li').each do |li|
+      next if li.content.include?('e1RM')
+      next if li.content =~ /\.|\?|'/
+
+      if li.content =~ /\d+x\d+/
+        puts parse_main(li.content)
+      elsif li.content.include?(",")
+        puts parse_accessories(li.content)
+      else
+        puts " XXX #{li.content}"
+      end
+    end
+
+    #puts raw_content
+  else
+    nope.puts "\n========== #{date} ===========\n\n"
+    nope.puts date
+    nope.puts raw_content
+  end
+end
+nope.close
