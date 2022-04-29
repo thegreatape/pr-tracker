@@ -26,10 +26,10 @@ describe Parser do
     workout = Parser.new.parse(workout_text, Date.new)
     expect(workout.exercises.map(&:name)).to match_array [
       "Deadlift",
-      "Safety bar squat",
-      "Reverse ring fly",
-      "Calf raise",
-      "Ab roller"
+      "Safety Bar Squat",
+      "Reverse Ring Fly",
+      "Calf Raise",
+      "Ab Roller"
     ]
   end
 
@@ -82,7 +82,7 @@ describe Parser do
 
     workout = Parser.new.parse(workout_text, Date.new)
     expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("Pull-up")
+    expect(workout.exercises.first.name).to eq("Pull Up")
     expect(workout.exercises.first.sets.length).to eq(2)
     expect(workout.exercises.first.sets.map(&:weight_lbs)).to all be_nil
     expect(workout.exercises.first.sets.map(&:bodyweight)).to all be true
@@ -101,5 +101,18 @@ describe Parser do
     expect(workout.exercises.first.sets.length).to eq(1)
     expect(workout.exercises.first.sets.map(&:weight_lbs)).to all be_nil
     expect(workout.exercises.first.sets.map(&:duration_seconds)).to all eq(1200)
+  end
+
+  it "parses fractional weights" do
+
+    workout_text = <<~WORKOUT
+    # H Curl
+    27.5 x 10 x 4
+    WORKOUT
+
+    workout = Parser.new.parse(workout_text, Date.new)
+    expect(workout.exercises.length).to eq(1)
+    expect(workout.exercises.first.name).to eq("H Curl")
+    expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(27.5)
   end
 end

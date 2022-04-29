@@ -11,13 +11,13 @@ class Parser
     /x
 
   SETS_RE = /
-    (?<weight>\d+|BW) # weight (or BW for bodyweight)
-    (?<units>lbs|kg)? # optional units
-    \s*x\s*        # x surrounded by optional whitespace
-    (?<reps>\d+)   # reps
-    (?:            # optionally followed by
-      \s*x\s*         # x surrounded by optional whitespace
-      (?<sets>\d+)    # sets
+    (?<weight>[\d\.]+|BW) # weight (or BW for bodyweight)
+    (?<units>lbs|kg)?     # optional units
+    \s*x\s*               # x surrounded by optional whitespace
+    (?<reps>\d+)          # reps
+    (?:                   # optionally followed by
+      \s*x\s*               # x surrounded by optional whitespace
+      (?<sets>\d+)          # sets
     )?
     /x
 
@@ -76,7 +76,7 @@ class Parser
       elsif match = SETS_RE.match(line)
         set_count = (match[:sets] || 1).to_i
         set_count.times do
-          weight = match[:weight] == "BW" ? nil : match[:weight].to_i
+          weight = match[:weight] == "BW" ? nil : match[:weight].to_f
           if match[:units] == "kg"
             weight = weight * 2.2
           end
