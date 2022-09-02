@@ -60,7 +60,8 @@ class Parser
     "Trap Bar Deads" => "Trap Bar Deadlift",
     "Trap Bar Dl" => "Trap Bar Deadlift",
     "Tri Pushdowns" => "Tri Pushdown",
-    "Yukon Bar Squat" => "Squat"
+    "Yukon Bar Squat" => "Squat",
+    "Yukon Squat" => "Squat"
   }
 
   def parse(contents, date)
