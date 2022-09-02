@@ -1,0 +1,2 @@
+#!/bin/bash
+./bin/prs ~/Dropbox/Workouts > public/data.js
