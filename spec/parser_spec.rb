@@ -115,4 +115,28 @@ describe Parser do
     expect(workout.exercises.first.name).to eq("H Curl")
     expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(27.5)
   end
+
+  describe "reddit/markdown logs" do
+    it "parses straight sets with non-specified accessory work" do
+      workout_text = <<~WORKOUT
+      **Bullmastiff W1D1**
+
+      * Yukon Bar Squat - 6/6/6/13 x 225
+      * RDL - 3 x 12 x 185
+      * Belt squats, pulldowns, meadows rows, leg extensions
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text, Date.new)
+
+      expect(workout.exercises.length).to eq(2)
+      expect(workout.exercises.first.name).to eq("Squat") # synonym
+      expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(225)
+      expect(workout.exercises.first.sets.take(3).map(&:reps)).to all eq(6)
+      expect(workout.exercises.first.sets.last.reps).to eq(13)
+
+      expect(workout.exercises.last.name).to eq("Romanian Deadlift") # synonym
+      expect(workout.exercises.last.sets.map(&:weight_lbs)).to all eq(185)
+      expect(workout.exercises.last.sets.map(&:reps)).to all eq(12)
+    end
+  end
 end
