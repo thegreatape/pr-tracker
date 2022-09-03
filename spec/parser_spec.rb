@@ -182,14 +182,15 @@ describe Parser do
 
       workout = Parser.new.parse(workout_text, Date.new)
 
-      expect(workout.exercises.length).to eq(1)
+      expect(workout.exercises.length).to eq(2)
 
       expect(workout.exercises.first.name).to eq("Bench Press")
       expect(workout.exercises.first.sets.first.weight_lbs).to eq(165)
       expect(workout.exercises.first.sets.first.reps).to eq(10)
-      expect(workout.exercises.first.sets.drop(1).map(&:weight)).to eq([140, 140, 140, 140])
-      expect(workout.exercises.first.sets.drop(1).map(&:reps)).to eq([10, 10, 10, 10])
 
+      expect(workout.exercises.last.name).to eq("Bench Press")
+      expect(workout.exercises.last.sets.map(&:weight_lbs)).to eq([140, 140, 140])
+      expect(workout.exercises.last.sets.map(&:reps)).to eq([10, 10, 10])
     end
   end
 end

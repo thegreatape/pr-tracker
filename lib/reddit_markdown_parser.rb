@@ -1,7 +1,7 @@
 class RedditMarkdownParser
   SETS_RE = /
     (\s*[-\*]\s*)?           # optional leading dash or star surrounded by optional whitespace
-    (?<name>[\w\s]*?)             # name of exercise
+    (?<name>[\w\s]*?)        # name of exercise
     (\s*-\s*)?               # optional dash surrounded by optional whitespace
     (                        # either:
       (                      #
@@ -10,11 +10,11 @@ class RedditMarkdownParser
       (?<reps>\d+)           #   reps
       )                      #
       |                      # OR
-      (?<rep_counts>(
+      (?<rep_counts>(        #
         [\d\/]               #   any number of rep count slash rep count slash rep count
-        |
+        |                    #
         (\d+\([HMEhme]\)\s*),#   with an optional hardness rating: H or M or E
-      )+)
+      )+)                    #
     )                        #
     \s*x\s*                  # x surrounded by optional whitespace
     (?<weight>[\d\.]+|BW|\w+\sband) # weight (or BW for bodyweight or band)
@@ -23,10 +23,21 @@ class RedditMarkdownParser
 
   TITLE_RE = /^\*\*/
   LINE_OR_SUPERSET_RE = /\n|\s*- SS w\/\s*/
+  TOP_SET_RE = /(?<name>[\w\s]*?)(\s*-\s*)\s*\d+\s*x\s*\d+,\s*\d+\s*x\s*\d+/
 
   def parse(contents, date)
     workout = Workout.new(date)
-    contents.split(LINE_OR_SUPERSET_RE).each do |line|
+    lines = contents.split(LINE_OR_SUPERSET_RE).flat_map do |line|
+      if match = TOP_SET_RE.match(line)
+        top_set, backoff_sets = line.split(/,\s*/)
+        backoff_sets = "#{match[:name]} #{backoff_sets}"
+        [top_set, backoff_sets]
+      else
+        line
+      end
+    end
+
+    lines.each do |line|
       if match = SETS_RE.match(line)
         #puts line
         #puts "name: #{match[:name]}"
