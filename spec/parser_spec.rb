@@ -139,23 +139,41 @@ describe Parser do
       expect(workout.exercises.last.sets.map(&:reps)).to all eq(12)
     end
 
-    it "parses supersets and E/M/H ratings" do
+    it "parses supersets" do
 
       workout_text = <<~WORKOUT
       **GGBB D1**
 
-      * OHP - 6(M), 4x3 x 135 - SS w/ rear delt flies 17/15/12/10 x 15
-      * Inc BP - 12(E), 4x8 x 115 - SS w/ lat raises 18/15/12/8 x 15
+      * OHP - 6/3/3/3/3 x 135 - SS w/ rear delt flies 17/15/12/10 x 15
+      * Inc BP - 12/8/8/8/8 x 115 - SS w/ lat raises 18/15/12/8 x 15
       * KB snatch 10x10 x 16kg EMOM
       WORKOUT
 
       workout = Parser.new.parse(workout_text, Date.new)
 
       expect(workout.exercises.length).to eq(5)
-      expect(workout.exercises.first.name).to eq("OHP")
+
+      expect(workout.exercises.first.name).to eq("Overhead Press")
       expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(135)
       expect(workout.exercises.first.sets.first.reps).to eq(6)
       expect(workout.exercises.first.sets.drop(1).map(&:reps)).to eq([3,3,3,3])
+
+      expect(workout.exercises[1].name).to eq("Rear Delt Fly")
+      expect(workout.exercises[1].sets.map(&:weight_lbs)).to all eq(15)
+      expect(workout.exercises[1].sets.map(&:reps)).to eq([17, 15, 12, 10])
+
+      expect(workout.exercises[2].name).to eq("Incline Bench")
+      expect(workout.exercises[2].sets.map(&:weight_lbs)).to all eq(115)
+      expect(workout.exercises[2].sets.map(&:reps)).to eq([12, 8, 8, 8, 8])
+
+      expect(workout.exercises[3].name).to eq("Lat Raises")
+      expect(workout.exercises[3].sets.map(&:weight_lbs)).to all eq(15)
+      expect(workout.exercises[3].sets.map(&:reps)).to eq([18, 15, 12, 8])
+
+      expect(workout.exercises[4].name).to eq("Kettlebell Snatch")
+      expect(workout.exercises[4].sets.map(&:weight_lbs)).to all eq(16 * 2.2)
+      expect(workout.exercises[4].sets.count).to eq(10)
+      expect(workout.exercises[4].sets.map(&:reps)).to all eq(10)
     end
   end
 end
