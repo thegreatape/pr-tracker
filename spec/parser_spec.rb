@@ -140,7 +140,6 @@ describe Parser do
     end
 
     it "parses supersets" do
-
       workout_text = <<~WORKOUT
       **GGBB D1**
 
@@ -174,6 +173,23 @@ describe Parser do
       expect(workout.exercises[4].sets.map(&:weight_lbs)).to all eq(16 * 2.2)
       expect(workout.exercises[4].sets.count).to eq(10)
       expect(workout.exercises[4].sets.map(&:reps)).to all eq(10)
+    end
+
+    it "parses backoff work" do
+      workout_text = <<~WORKOUT
+      * Bench - 10x165, 3x10x140
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text, Date.new)
+
+      expect(workout.exercises.length).to eq(1)
+
+      expect(workout.exercises.first.name).to eq("Bench Press")
+      expect(workout.exercises.first.sets.first.weight_lbs).to eq(165)
+      expect(workout.exercises.first.sets.first.reps).to eq(10)
+      expect(workout.exercises.first.sets.drop(1).map(&:weight)).to eq([140, 140, 140, 140])
+      expect(workout.exercises.first.sets.drop(1).map(&:reps)).to eq([10, 10, 10, 10])
+
     end
   end
 end
