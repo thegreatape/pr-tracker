@@ -138,5 +138,24 @@ describe Parser do
       expect(workout.exercises.last.sets.map(&:weight_lbs)).to all eq(185)
       expect(workout.exercises.last.sets.map(&:reps)).to all eq(12)
     end
+
+    it "parses supersets and E/M/H ratings" do
+
+      workout_text = <<~WORKOUT
+      **GGBB D1**
+
+      * OHP - 6(M), 4x3 x 135 - SS w/ rear delt flies 17/15/12/10 x 15
+      * Inc BP - 12(E), 4x8 x 115 - SS w/ lat raises 18/15/12/8 x 15
+      * KB snatch 10x10 x 16kg EMOM
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text, Date.new)
+
+      expect(workout.exercises.length).to eq(5)
+      expect(workout.exercises.first.name).to eq("OHP")
+      expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(135)
+      expect(workout.exercises.first.sets.first.reps).to eq(6)
+      expect(workout.exercises.first.sets.drop(1).map(&:reps)).to eq([3,3,3,3])
+    end
   end
 end
