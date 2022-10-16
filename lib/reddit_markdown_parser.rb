@@ -22,6 +22,7 @@ class RedditMarkdownParser
     /x
 
   TITLE_RE = /^\*\*/
+  COMMENT_RE = /^\/\//
   LINE_OR_SUPERSET_RE = /\n|\s*- SS w\/\s*/
   TOP_SET_RE = /(?<name>[\w\s]*?)(\s*-\s*)\s*\d+\s*x\s*\d+,\s*\d+\s*x\s*\d+/
 
@@ -65,6 +66,8 @@ class RedditMarkdownParser
           end
           exercise.sets << ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, workout: workout, bodyweight: is_bodyweight)
         end
+      elsif line.match(COMMENT_RE)
+        # ignore
       elsif !line.match(TITLE_RE)
         if !line.chomp.empty?
           $stderr.puts "didn't match line for #{date}: |#{line}|"
