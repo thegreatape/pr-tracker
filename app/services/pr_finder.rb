@@ -1,4 +1,4 @@
-class PRFinder
+class PrFinder
   attr_reader :workouts
 
   def initialize(workouts)

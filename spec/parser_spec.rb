@@ -1,7 +1,4 @@
-require 'parser'
-require 'exercise'
-require 'exercise_set'
-require 'date'
+require 'rails_helper'
 
 describe Parser do
   it "parses execise names" do

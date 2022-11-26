@@ -1,9 +1,6 @@
-require 'pr_finder'
-require 'date'
-require 'parser'
-require 'exercise'
+require 'rails_helper'
 
-describe PRFinder do
+describe PrFinder do
   it "reports rep PRs over time" do
     last_week = Date.today - 1.week
     last_week_workout_text = <<~WORKOUT
@@ -26,7 +23,7 @@ describe PRFinder do
     WORKOUT
     today_workout = Parser.new.parse(today_workout_text, today)
 
-    prs = PRFinder.new([last_week_workout, yesterday_workout, today_workout]).prs
+    prs = PrFinder.new([last_week_workout, yesterday_workout, today_workout]).prs
     expect(prs.length).to eq(2)
 
     expect(prs.first.exercise.name).to eq("Deadlift")
