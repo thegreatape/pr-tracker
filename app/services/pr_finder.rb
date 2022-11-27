@@ -12,7 +12,7 @@ class PrFinder
     pr_sets = []
 
     workouts.each do |workout|
-      workout.exercises.flat_map(&:sets)
+      workout.exercise_sets
         .filter {|e| !e.bodyweight && !e.duration_seconds }
         .each do |current_set|
           exercise_name = current_set.exercise.name

@@ -8,6 +8,8 @@ class InitialModelImport < ActiveRecord::Migration[7.0]
 
     create_table :workouts do |t|
       t.date :date, null: false
+
+      t.timestamps
     end
 
     create_table :exercise_sets do |t|

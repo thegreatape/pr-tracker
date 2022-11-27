@@ -21,7 +21,7 @@ describe Parser do
       WORKOUT
 
     workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.map(&:name)).to match_array [
+    expect(workout.exercise_sets.map(&:exercise).map(&:name).uniq).to match_array [
       "Deadlift",
       "Safety Bar Squat",
       "Reverse Ring Fly",
@@ -38,12 +38,10 @@ describe Parser do
       WORKOUT
 
     workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("Deadlift")
-    expect(workout.exercises.first.sets.length).to eq(4)
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
-    expect(workout.exercises.first.sets.map(&:reps)).to eq([8, 5, 5, 5])
-    expect(workout.exercises.first.sets.map(&:exercise).map(&:name)).to eq(['Deadlift', 'Deadlift','Deadlift','Deadlift'])
+    expect(workout.exercise_sets.length).to eq(4)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name)).to all eq("Deadlift")
+    expect(workout.exercise_sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
+    expect(workout.exercise_sets.map(&:reps)).to eq([8, 5, 5, 5])
   end
 
   it "parses units" do

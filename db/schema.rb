@@ -35,6 +35,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_26_171501) do
 
   create_table "workouts", force: :cascade do |t|
     t.date "date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "exercise_sets", "exercises"

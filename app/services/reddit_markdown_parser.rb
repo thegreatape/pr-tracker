@@ -27,7 +27,7 @@ class RedditMarkdownParser
   TOP_SET_RE = /(?<name>[\w\s]*?)(\s*-\s*)\s*\d+\s*x\s*\d+,\s*\d+\s*x\s*\d+/
 
   def parse(contents, date)
-    workout = Workout.new(date)
+    workout = Workout.new(date: date)
     lines = contents.split(LINE_OR_SUPERSET_RE).flat_map do |line|
       if match = TOP_SET_RE.match(line)
         top_set, backoff_sets = line.split(/,\s*/)
@@ -49,8 +49,8 @@ class RedditMarkdownParser
 
         name = match[:name].squish.titleize
         name = Parser::SYNONYMS[name] || name
-        exercise = Exercise.new(name)
-        workout.exercises << exercise
+        exercise = Exercise.new(name: name)
+
         reps_by_set = if rep_counts = match[:rep_counts]
            rep_counts.split('/')
         else
@@ -64,7 +64,7 @@ class RedditMarkdownParser
           if match[:units] == "kg"
             weight = weight * 2.2
           end
-          exercise.sets << ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, workout: workout, bodyweight: is_bodyweight)
+          workout.exercise_sets << ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, workout: workout, bodyweight: is_bodyweight)
         end
       elsif line.match(COMMENT_RE)
         # ignore
