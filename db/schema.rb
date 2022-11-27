@@ -10,8 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 0) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_26_171501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "exercise_sets", force: :cascade do |t|
+    t.bigint "exercise_id", null: false
+    t.bigint "workout_id", null: false
+    t.boolean "bodyweight", default: false
+    t.integer "duration_seconds"
+    t.decimal "weight_lbs", precision: 8, scale: 2
+    t.integer "reps"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercise_id"], name: "index_exercise_sets_on_exercise_id"
+    t.index ["workout_id"], name: "index_exercise_sets_on_workout_id"
+  end
+
+  create_table "exercises", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "workouts", force: :cascade do |t|
+    t.date "date", null: false
+  end
+
+  add_foreign_key "exercise_sets", "exercises"
+  add_foreign_key "exercise_sets", "workouts"
 end
