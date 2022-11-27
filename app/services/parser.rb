@@ -35,11 +35,22 @@ class Parser
     "Yukon Squat" => "Squat"
   }
 
-  def parse(contents, date)
+  Exercise = Struct.new(:name, keyword_init: true)
+  Workout = Struct.new(:exercise_sets, keyword_init: true)
+  ExerciseSet = Struct.new(
+    :bodyweight,
+    :duration_seconds,
+    :weight_lbs,
+    :reps,
+    :exercise,
+    keyword_init: true
+  )
+
+  def parse(contents)
     if contents =~ /^\#/
-      WeightroomDotUkParser.new.parse(contents, date)
+      WeightroomDotUkParser.new.parse(contents)
     else
-      RedditMarkdownParser.new.parse(contents, date)
+      RedditMarkdownParser.new.parse(contents)
     end
   end
 end

@@ -16,7 +16,6 @@ describe PrFinder do
     WORKOUT
     yesterday_workout = Parser.new.parse(yesterday_workout_text, yesterday)
 
-    today = Date.today
     today_workout_text = <<~WORKOUT
     # Deadlift
     300x3
