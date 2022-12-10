@@ -5,26 +5,19 @@ class PrFinder
     @workouts = workouts
   end
 
-  def prs
-    # exercise name =>
-    #   { reps => exercise_set }
-    best_to_date = {}
-    pr_sets = []
+  def self.update
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute <<-SQL
+        delete from pr_sets;
+      SQL
 
-    workouts.each do |workout|
-      workout.exercise_sets
-        .filter {|e| !e.bodyweight && !e.duration_seconds }
-        .each do |current_set|
-          exercise_name = current_set.exercise.name
-          best_to_date[exercise_name] ||= {}
-          existing_pr = best_to_date[exercise_name][current_set.reps]
-          if existing_pr.nil? || existing_pr.weight_lbs < current_set.weight_lbs
-            best_to_date[exercise_name][current_set.reps] = current_set
-            pr_sets << current_set
-          end
-        end
+      ActiveRecord::Base.connection.execute <<-SQL
+        insert into pr_sets (weight_lbs, date, reps, exercise_id, created_at, updated_at)
+        select max(weight_lbs) as weight_lbs, max(workouts.date) as date, reps, exercise_id, now(), now()
+        from exercise_sets
+        join workouts on exercise_sets.workout_id = workouts.id
+        group by reps, exercise_id;
+      SQL
     end
-
-    pr_sets.sort_by(&:date)
   end
 end
