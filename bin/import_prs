@@ -1,0 +1,4 @@
+Dir.glob("#{ARGV[0]}/**/*.workout").map do |file_path|
+  year, month, day = file_path.split('/').last(3).map(&:to_i)
+  Workout.create_from_parsed(Parser.new.parse(File.read(file_path)), Date.new(year, month, day))
+end

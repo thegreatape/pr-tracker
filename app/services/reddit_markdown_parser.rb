@@ -26,8 +26,8 @@ class RedditMarkdownParser
   LINE_OR_SUPERSET_RE = /\n|\s*- SS w\/\s*/
   TOP_SET_RE = /(?<name>[\w\s]*?)(\s*-\s*)\s*\d+\s*x\s*\d+,\s*\d+\s*x\s*\d+/
 
-  def parse(contents, date)
-    workout = Workout.new(date)
+  def parse(contents)
+    workout = Parser::Workout.new(exercise_sets: [])
     lines = contents.split(LINE_OR_SUPERSET_RE).flat_map do |line|
       if match = TOP_SET_RE.match(line)
         top_set, backoff_sets = line.split(/,\s*/)
@@ -49,8 +49,8 @@ class RedditMarkdownParser
 
         name = match[:name].squish.titleize
         name = Parser::SYNONYMS[name] || name
-        exercise = Exercise.new(name)
-        workout.exercises << exercise
+        exercise = Parser::Exercise.new(name: name)
+
         reps_by_set = if rep_counts = match[:rep_counts]
            rep_counts.split('/')
         else
@@ -64,13 +64,13 @@ class RedditMarkdownParser
           if match[:units] == "kg"
             weight = weight * 2.2
           end
-          exercise.sets << ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, workout: workout, bodyweight: is_bodyweight)
+          workout.exercise_sets << Parser::ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, bodyweight: is_bodyweight)
         end
       elsif line.match(COMMENT_RE)
         # ignore
       elsif !line.match(TITLE_RE)
         if !line.chomp.empty?
-          $stderr.puts "didn't match line for #{date}: |#{line}|"
+          $stderr.puts "didn't match line |#{line}|"
           #raise "didn't match line:\n#{line}"
         end
       end

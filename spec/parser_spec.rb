@@ -1,7 +1,4 @@
-require 'parser'
-require 'exercise'
-require 'exercise_set'
-require 'date'
+require 'rails_helper'
 
 describe Parser do
   it "parses execise names" do
@@ -23,8 +20,8 @@ describe Parser do
       BW x 3 x 3
       WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.map(&:name)).to match_array [
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name).uniq).to match_array [
       "Deadlift",
       "Safety Bar Squat",
       "Reverse Ring Fly",
@@ -40,13 +37,11 @@ describe Parser do
       265 x 5 x 3
       WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("Deadlift")
-    expect(workout.exercises.first.sets.length).to eq(4)
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
-    expect(workout.exercises.first.sets.map(&:reps)).to eq([8, 5, 5, 5])
-    expect(workout.exercises.first.sets.map(&:exercise).map(&:name)).to eq(['Deadlift', 'Deadlift','Deadlift','Deadlift'])
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.length).to eq(4)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name)).to all eq("Deadlift")
+    expect(workout.exercise_sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
+    expect(workout.exercise_sets.map(&:reps)).to eq([8, 5, 5, 5])
   end
 
   it "parses units" do
@@ -59,19 +54,20 @@ describe Parser do
       24kg x 20 x 5
       WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(2)
-    expect(workout.exercises.first.name).to eq("Deadlift")
-    expect(workout.exercises.first.sets.length).to eq(4)
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
-    expect(workout.exercises.first.sets.map(&:reps)).to eq([8, 5, 5, 5])
-    expect(workout.exercises.first.sets.map(&:exercise).map(&:name)).to eq(['Deadlift', 'Deadlift','Deadlift','Deadlift'])
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.length).to eq(9)
 
-    expect(workout.exercises.last.name).to eq("Kettlebell Swing")
-    expect(workout.exercises.last.sets.length).to eq(5)
-    expect(workout.exercises.last.sets.map(&:weight_lbs)).to all be_within(0.1).of(52.8)
-    expect(workout.exercises.last.sets.map(&:reps)).to all eq(20)
-    expect(workout.exercises.last.sets.map(&:exercise).map(&:name)).to all eq("Kettlebell Swing")
+    deadlift_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Deadlift"}
+    expect(deadlift_sets.length).to eq(4)
+    expect(deadlift_sets.map(&:weight_lbs)).to eq([265, 265, 265, 265])
+    expect(deadlift_sets.map(&:reps)).to eq([8, 5, 5, 5])
+    expect(deadlift_sets.map(&:exercise).map(&:name)).to eq(['Deadlift', 'Deadlift','Deadlift','Deadlift'])
+
+    kb_swing_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Kettlebell Swing"}
+    expect(kb_swing_sets.length).to eq(5)
+    expect(kb_swing_sets.map(&:weight_lbs)).to all be_within(0.1).of(52.8)
+    expect(kb_swing_sets.map(&:reps)).to all eq(20)
+    expect(kb_swing_sets.map(&:exercise).map(&:name)).to all eq("Kettlebell Swing")
   end
 
   it "parses bodyweight exercises" do
@@ -80,12 +76,11 @@ describe Parser do
     BW x 5 x 2
     WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("Pull Up")
-    expect(workout.exercises.first.sets.length).to eq(2)
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to all be_nil
-    expect(workout.exercises.first.sets.map(&:bodyweight)).to all be true
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.length).to eq(2)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name)).to all eq("Pull Up")
+    expect(workout.exercise_sets.map(&:weight_lbs)).to all be_nil
+    expect(workout.exercise_sets.map(&:bodyweight)).to all be true
   end
 
   it "parses duration based exercises" do
@@ -95,12 +90,11 @@ describe Parser do
     20 min
     WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("Bike")
-    expect(workout.exercises.first.sets.length).to eq(1)
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to all be_nil
-    expect(workout.exercises.first.sets.map(&:duration_seconds)).to all eq(1200)
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.length).to eq(1)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name)).to all eq("Bike")
+    expect(workout.exercise_sets.map(&:weight_lbs)).to all be_nil
+    expect(workout.exercise_sets.map(&:duration_seconds)).to all eq(1200)
   end
 
   it "parses fractional weights" do
@@ -110,10 +104,10 @@ describe Parser do
     27.5 x 10 x 4
     WORKOUT
 
-    workout = Parser.new.parse(workout_text, Date.new)
-    expect(workout.exercises.length).to eq(1)
-    expect(workout.exercises.first.name).to eq("H Curl")
-    expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(27.5)
+    workout = Parser.new.parse(workout_text)
+    expect(workout.exercise_sets.length).to eq(4)
+    expect(workout.exercise_sets.map(&:exercise).map(&:name)).to all eq("H Curl")
+    expect(workout.exercise_sets.map(&:weight_lbs)).to all eq(27.5)
   end
 
   describe "reddit/markdown logs" do
@@ -126,17 +120,16 @@ describe Parser do
       * Belt squats, pulldowns, meadows rows, leg extensions
       WORKOUT
 
-      workout = Parser.new.parse(workout_text, Date.new)
+      workout = Parser.new.parse(workout_text)
 
-      expect(workout.exercises.length).to eq(2)
-      expect(workout.exercises.first.name).to eq("Squat") # synonym
-      expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(225)
-      expect(workout.exercises.first.sets.take(3).map(&:reps)).to all eq(6)
-      expect(workout.exercises.first.sets.last.reps).to eq(13)
+      squat_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Squat"} # synonym
+      expect(squat_sets.map(&:weight_lbs)).to all eq(225)
+      expect(squat_sets.take(3).map(&:reps)).to all eq(6)
+      expect(squat_sets.last.reps).to eq(13)
 
-      expect(workout.exercises.last.name).to eq("Romanian Deadlift") # synonym
-      expect(workout.exercises.last.sets.map(&:weight_lbs)).to all eq(185)
-      expect(workout.exercises.last.sets.map(&:reps)).to all eq(12)
+      rdl_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Romanian Deadlift"} # synonym
+      expect(rdl_sets.map(&:weight_lbs)).to all eq(185)
+      expect(rdl_sets.map(&:reps)).to all eq(12)
     end
 
     it "parses supersets" do
@@ -148,31 +141,29 @@ describe Parser do
       * KB snatch 10x10 x 16kg EMOM
       WORKOUT
 
-      workout = Parser.new.parse(workout_text, Date.new)
+      workout = Parser.new.parse(workout_text)
 
-      expect(workout.exercises.length).to eq(5)
+      ohp_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Overhead Press"} # synonym
+      expect(ohp_sets.map(&:weight_lbs)).to all eq(135)
+      expect(ohp_sets.first.reps).to eq(6)
+      expect(ohp_sets.drop(1).map(&:reps)).to eq([3,3,3,3])
 
-      expect(workout.exercises.first.name).to eq("Overhead Press")
-      expect(workout.exercises.first.sets.map(&:weight_lbs)).to all eq(135)
-      expect(workout.exercises.first.sets.first.reps).to eq(6)
-      expect(workout.exercises.first.sets.drop(1).map(&:reps)).to eq([3,3,3,3])
+      rd_fly_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Rear Delt Fly"}
+      expect(rd_fly_sets.map(&:weight_lbs)).to all eq(15)
+      expect(rd_fly_sets.map(&:reps)).to eq([17, 15, 12, 10])
 
-      expect(workout.exercises[1].name).to eq("Rear Delt Fly")
-      expect(workout.exercises[1].sets.map(&:weight_lbs)).to all eq(15)
-      expect(workout.exercises[1].sets.map(&:reps)).to eq([17, 15, 12, 10])
+      incline_bench_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Incline Bench"}
+      expect(incline_bench_sets.map(&:weight_lbs)).to all eq(115)
+      expect(incline_bench_sets.map(&:reps)).to eq([12, 8, 8, 8, 8])
 
-      expect(workout.exercises[2].name).to eq("Incline Bench")
-      expect(workout.exercises[2].sets.map(&:weight_lbs)).to all eq(115)
-      expect(workout.exercises[2].sets.map(&:reps)).to eq([12, 8, 8, 8, 8])
+      lat_raise_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Lat Raises"}
+      expect(lat_raise_sets.map(&:weight_lbs)).to all eq(15)
+      expect(lat_raise_sets.map(&:reps)).to eq([18, 15, 12, 8])
 
-      expect(workout.exercises[3].name).to eq("Lat Raises")
-      expect(workout.exercises[3].sets.map(&:weight_lbs)).to all eq(15)
-      expect(workout.exercises[3].sets.map(&:reps)).to eq([18, 15, 12, 8])
-
-      expect(workout.exercises[4].name).to eq("Kettlebell Snatch")
-      expect(workout.exercises[4].sets.map(&:weight_lbs)).to all eq(16 * 2.2)
-      expect(workout.exercises[4].sets.count).to eq(10)
-      expect(workout.exercises[4].sets.map(&:reps)).to all eq(10)
+      kb_snatch_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Kettlebell Snatch"}
+      expect(kb_snatch_sets.map(&:weight_lbs)).to all eq(16 * 2.2)
+      expect(kb_snatch_sets.count).to eq(10)
+      expect(kb_snatch_sets.map(&:reps)).to all eq(10)
     end
 
     it "parses backoff work" do
@@ -180,17 +171,15 @@ describe Parser do
       * Bench - 10x165, 3x10x140
       WORKOUT
 
-      workout = Parser.new.parse(workout_text, Date.new)
+      workout = Parser.new.parse(workout_text)
 
-      expect(workout.exercises.length).to eq(2)
+      expect(workout.exercise_sets.first.exercise.name).to eq("Bench Press")
+      expect(workout.exercise_sets.first.weight_lbs).to eq(165)
+      expect(workout.exercise_sets.first.reps).to eq(10)
 
-      expect(workout.exercises.first.name).to eq("Bench Press")
-      expect(workout.exercises.first.sets.first.weight_lbs).to eq(165)
-      expect(workout.exercises.first.sets.first.reps).to eq(10)
-
-      expect(workout.exercises.last.name).to eq("Bench Press")
-      expect(workout.exercises.last.sets.map(&:weight_lbs)).to eq([140, 140, 140])
-      expect(workout.exercises.last.sets.map(&:reps)).to eq([10, 10, 10])
+      expect(workout.exercise_sets.drop(1).map(&:exercise).map(&:name)).to all eq("Bench Press")
+      expect(workout.exercise_sets.drop(1).map(&:weight_lbs)).to eq([140, 140, 140])
+      expect(workout.exercise_sets.drop(1).map(&:reps)).to eq([10, 10, 10])
     end
   end
 end
