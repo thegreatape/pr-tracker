@@ -28,14 +28,13 @@ describe PrFinder do
     expect(PrSet.count).to eq(2)
 
     last_week_pr = PrSet.where(date: last_week).first
-    debugger
     expect(last_week_pr.exercise.name).to eq("Deadlift")
     expect(last_week_pr.reps).to eq(5)
     expect(last_week_pr.weight_lbs).to eq(270)
 
     today_pr = PrSet.where(date: today).first
-    expect(last_week_pr.exercise.name).to eq("Deadlift")
-    expect(last_week_pr.reps).to eq(3)
-    expect(last_week_pr.weight_lbs).to eq(300)
+    expect(today_pr.exercise.name).to eq("Deadlift")
+    expect(today_pr.reps).to eq(3)
+    expect(today_pr.weight_lbs).to eq(300)
   end
 end

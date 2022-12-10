@@ -13,10 +13,19 @@ class PrFinder
 
       ActiveRecord::Base.connection.execute <<-SQL
         insert into pr_sets (weight_lbs, date, reps, exercise_id, created_at, updated_at)
-        select max(weight_lbs) as weight_lbs, max(workouts.date) as date, reps, exercise_id, now(), now()
-        from exercise_sets
-        join workouts on exercise_sets.workout_id = workouts.id
-        group by reps, exercise_id;
+        select weight_lbs, date, reps, exercise_id, now(), now()
+        from (
+          select
+             weight_lbs as weight_lbs,
+             workouts.date as date,
+             reps,
+             exercise_id,
+             row_number() over (partition by exercise_id, reps order by weight_lbs desc)
+          from exercise_sets
+            join workouts on exercise_sets.workout_id = workouts.id
+          where weight_lbs is not null
+        ) t
+        where row_number = 1
       SQL
     end
   end
