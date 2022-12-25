@@ -2,24 +2,21 @@
 
 - sets_by_exercise = @pr_sets.group_by {|pr_set| pr_set.exercise.name }
 
-%table
-  %thead
-    %tr
-      - PrSetsController::BENCHMARK_LIFTS.each do |lift|
-        %th{colspan: "4"}=lift
-    %tr
-      - PrSetsController::BENCHMARK_LIFTS.each do |lift|
+- PrSetsController::BENCHMARK_LIFTS.each do |lift|
+  %h2= lift
+  %table
+    %thead
+      %tr
         %th Reps
         %th Weight (lbs)
         %th e1RM
         %th Date
-  %tbody
-    %tr
-      - (1..20).each do |reps|
-        %tr
-          - PrSetsController::BENCHMARK_LIFTS.each do |lift|
-            - lift_sets = sets_by_exercise[lift]
-            - matching_pr_set = lift_sets.find {|s| s.reps == reps}
+    %tbody
+      %tr
+        - (1..20).each do |reps|
+          - lift_sets = sets_by_exercise[lift]
+          - matching_pr_set = lift_sets.find {|s| s.reps == reps}
+          %tr
             %td= reps
             %td= matching_pr_set&.weight_lbs
             %td= matching_pr_set&.e1rm
