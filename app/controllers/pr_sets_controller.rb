@@ -14,4 +14,8 @@ class PrSetsController < ApplicationController
   def index
     @pr_sets = PrSet.joins(:exercise).where(exercise: {name: BENCHMARK_LIFTS}, latest: true)
   end
+
+  def latest
+    @pr_sets = PrSet.joins(:exercise).where(exercise: {name: BENCHMARK_LIFTS}).order(date: :desc)
+  end
 end

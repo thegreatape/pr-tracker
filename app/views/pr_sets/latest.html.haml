@@ -1,0 +1,22 @@
+%h1 Latest PRs by date
+
+%table
+  %thead
+    %tr
+      %th Lift
+      %th Reps
+      %th Weight (lbs)
+      %th e1RM
+      %th Date
+  %tbody
+    - @pr_sets.each do |pr_set|
+      %tr
+        %td= pr_set.exercise.name
+        %td= pr_set.reps
+        %td= number_to_human(pr_set.weight_lbs, strip_insignificant_zeros: true)
+        %td= pr_set.e1rm
+        %td= pr_set.date
+
+
+
+

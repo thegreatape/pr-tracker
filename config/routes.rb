@@ -3,5 +3,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
-  resources :pr_sets
+  resources :pr_sets do
+    get 'latest', on: :collection
+  end
 end
