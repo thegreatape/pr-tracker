@@ -12,6 +12,6 @@ class PrSetsController < ApplicationController
   ]
 
   def index
-    @pr_sets = PrSet.joins(:exercise).where(exercise: {name: BENCHMARK_LIFTS})
+    @pr_sets = PrSet.joins(:exercise).where(exercise: {name: BENCHMARK_LIFTS}, latest: true)
   end
 end
