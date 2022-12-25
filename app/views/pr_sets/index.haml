@@ -18,7 +18,7 @@
           - matching_pr_set = lift_sets.find {|s| s.reps == reps}
           %tr
             %td= reps
-            %td= matching_pr_set&.weight_lbs
+            %td= number_to_human(matching_pr_set&.weight_lbs, strip_insignificant_zeros: true)
             %td= matching_pr_set&.e1rm
             %td= matching_pr_set&.date
 
