@@ -181,5 +181,14 @@ describe Parser do
       expect(workout.exercise_sets.drop(1).map(&:weight_lbs)).to eq([140, 140, 140])
       expect(workout.exercise_sets.drop(1).map(&:reps)).to eq([10, 10, 10])
     end
+
+    it "returns the raw text of the workout" do
+      workout_text = <<~WORKOUT
+      * Bench - 10x165, 3x10x140
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text)
+      expect(workout.raw_text).to eq(workout_text)
+    end
   end
 end

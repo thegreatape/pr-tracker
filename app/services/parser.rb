@@ -36,7 +36,11 @@ class Parser
   }
 
   Exercise = Struct.new(:name, keyword_init: true)
-  Workout = Struct.new(:exercise_sets, keyword_init: true)
+  Workout = Struct.new(
+    :exercise_sets,
+    :raw_text,
+    keyword_init: true
+  )
   ExerciseSet = Struct.new(
     :bodyweight,
     :duration_seconds,
@@ -47,10 +51,12 @@ class Parser
   )
 
   def parse(contents)
-    if contents =~ /^\#/
+    workout = if contents =~ /^\#/
       WeightroomDotUkParser.new.parse(contents)
     else
       RedditMarkdownParser.new.parse(contents)
     end
+    workout.raw_text = contents
+    workout
   end
 end
