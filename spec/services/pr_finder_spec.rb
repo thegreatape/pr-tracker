@@ -52,6 +52,7 @@ describe PrFinder do
     300x3
     WORKOUT
     Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday)
+
     today = Date.today
     today_workout_text = <<~WORKOUT
 
@@ -75,6 +76,23 @@ describe PrFinder do
     expect(yesterday_pr.reps).to eq(3)
     expect(yesterday_pr.weight_lbs).to eq(300)
     expect(yesterday_pr.latest).to be true
+  end
+
+  it "stores the exercise set id of the pr" do
+    today = Date.today
+    today_workout_text = <<~WORKOUT
+
+    # Deadlift
+    300x3
+    WORKOUT
+    workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+
+    PrFinder.update
+
+    expect(PrSet.count).to eq(1)
+    expect(workout.exercise_sets.count).to eq(1)
+
+    expect(PrSet.first.exercise_set_id).to eq(workout.exercise_sets.first.id)
   end
 
 end

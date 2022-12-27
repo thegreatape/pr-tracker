@@ -1,5 +1,6 @@
 class PrSet < ApplicationRecord
   belongs_to :exercise
+  belongs_to :exercise_set
 
   def e1rm
     return weight_lbs.to_i if reps == 1
