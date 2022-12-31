@@ -6,4 +6,6 @@ Rails.application.routes.draw do
   resources :pr_sets do
     get 'latest', on: :collection
   end
+
+  resources :workouts
 end
