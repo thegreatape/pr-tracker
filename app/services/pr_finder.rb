@@ -7,6 +7,11 @@ class PrFinder
 
   def self.update
     ActiveRecord::Base.transaction do
+
+      ActiveRecord::Base.connection.execute <<-SQL
+        update exercise_sets set pr = false, latest_pr = false
+      SQL
+
       ActiveRecord::Base.connection.execute <<-SQL
         with rep_maxes_in_workout as (
           select

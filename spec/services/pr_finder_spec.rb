@@ -78,21 +78,43 @@ describe PrFinder do
     expect(yesterday_pr.latest_pr).to be true
   end
 
-  it "stores the exercise set id of the pr" do
+  it "updates prior prs if an edit renders them no longer valid" do
+    yesterday = Date.today - 1.day
+    yesterday_workout_text = <<~WORKOUT
+    # Deadlift
+    300x3
+    WORKOUT
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday)
+
     today = Date.today
     today_workout_text = <<~WORKOUT
 
     # Deadlift
-    300x3
+    310x3
     WORKOUT
-    workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+
+    expect(ExerciseSet.pr_sets.count).to eq(0)
+    PrFinder.update
+    yesterday_workout.reload
+    today_workout.reload
+    expect(ExerciseSet.pr_sets.count).to eq(2)
+
+    yesterday_set = yesterday_workout.exercise_sets.first
+    expect(yesterday_set).to be_pr
+
+    today_set = today_workout.exercise_sets.first
+    expect(today_set).to be_pr
+
+    today_workout.exercise_sets.first.update(weight_lbs: 270)
 
     PrFinder.update
-
     expect(ExerciseSet.pr_sets.count).to eq(1)
-    expect(workout.exercise_sets.count).to eq(1)
 
-    expect(ExerciseSet.pr_sets.first.id).to eq(workout.exercise_sets.first.id)
+    yesterday_set = yesterday_workout.exercise_sets.first
+    expect(yesterday_set).to be_pr
+
+    today_set = today_workout.exercise_sets.first
+    expect(today_set).to_not be_pr
   end
-
 end
