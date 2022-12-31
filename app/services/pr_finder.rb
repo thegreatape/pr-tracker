@@ -8,10 +8,6 @@ class PrFinder
   def self.update
     ActiveRecord::Base.transaction do
       ActiveRecord::Base.connection.execute <<-SQL
-        delete from pr_sets;
-      SQL
-
-      ActiveRecord::Base.connection.execute <<-SQL
         with rep_maxes_in_workout as (
           select
             max(weight_lbs) weight_lbs,
@@ -42,17 +38,12 @@ class PrFinder
            from maxes_with_previous_max
            where (max_to_date > prev_max_weight or prev_max_weight is null)
         )
-        insert into pr_sets (weight_lbs, date, reps, exercise_id, exercise_set_id, latest, created_at, updated_at)
-        select
-          weight_lbs,
-          date,
-          reps,
-          exercise_id,
-          exercise_set_id,
-          row_number = 1 as latest,
-          now(),
-          now()
-          from ranked_maxes
+        update exercise_sets
+        set pr = true,
+            latest_pr = (row_number = 1),
+            updated_at = now()
+        from ranked_maxes
+        where ranked_maxes.exercise_set_id = exercise_sets.id
       SQL
     end
   end
