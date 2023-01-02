@@ -110,6 +110,25 @@ describe Parser do
     expect(workout.exercise_sets.map(&:weight_lbs)).to all eq(27.5)
   end
 
+  it "captures the line number of the set" do
+    workout_text = <<~WORKOUT
+      # Bench
+      165x10
+      140x10x3
+
+      # OHP
+      125 x 3 x 3
+    WORKOUT
+
+    workout = Parser.new.parse(workout_text)
+
+    bench_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Bench Press"}
+    expect(bench_sets.map(&:line_number)).to match_array([2, 3, 3, 3])
+
+    ohp_sets = workout.exercise_sets.filter {|s| s.exercise.name == "OHP"}
+    expect(ohp_sets.map(&:line_number)).to all eq(5)
+  end
+
   describe "reddit/markdown logs" do
     it "parses straight sets with non-specified accessory work" do
       workout_text = <<~WORKOUT
@@ -189,6 +208,21 @@ describe Parser do
 
       workout = Parser.new.parse(workout_text)
       expect(workout.raw_text).to eq(workout_text)
+    end
+
+    it "captures the line number of the set" do
+      workout_text = <<~WORKOUT
+      * Bench - 10x165, 3x10x140
+      * OHP - 3x3x125
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text)
+
+      bench_sets = workout.exercise_sets.filter {|s| s.exercise.name == "Bench Press"}
+      expect(bench_sets.map(&:line_number)).to all eq(1)
+
+      ohp_sets = workout.exercise_sets.filter {|s| s.exercise.name == "OHP"}
+      expect(ohp_sets.map(&:line_number)).to all eq(2)
     end
   end
 end

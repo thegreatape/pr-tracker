@@ -2,4 +2,5 @@
 
 - @workouts.each do |workout|
   %h2= workout.date
-  %pre= workout.raw_text
+  - workout.raw_text.split("\n").each do |line|
+    %pre= line

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_31_145939) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_02_144833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_31_145939) do
     t.datetime "updated_at", null: false
     t.boolean "pr", default: false, null: false
     t.boolean "latest_pr", default: false, null: false
+    t.integer "line_number", null: false
     t.index ["exercise_id"], name: "index_exercise_sets_on_exercise_id"
     t.index ["workout_id"], name: "index_exercise_sets_on_workout_id"
   end

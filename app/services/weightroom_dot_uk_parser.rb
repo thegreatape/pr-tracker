@@ -34,7 +34,7 @@ class WeightroomDotUkParser
     workout = Parser::Workout.new(exercise_sets: [])
     current_exercise = nil
 
-    contents.split("\n").each do |line|
+    contents.split("\n").each_with_index do |line, index|
       if match = EXERCISE_NAME_RE.match(line)
         name = match[:name].squish.titleize
         name = Parser::SYNONYMS[name] || name
@@ -46,7 +46,7 @@ class WeightroomDotUkParser
           if match[:units] == "kg"
             weight = weight * 2.2
           end
-          workout.exercise_sets << Parser::ExerciseSet.new(reps: match[:reps].to_i, weight_lbs: weight, exercise: current_exercise, bodyweight: match[:weight] == "BW")
+          workout.exercise_sets << Parser::ExerciseSet.new(reps: match[:reps].to_i, weight_lbs: weight, exercise: current_exercise, bodyweight: match[:weight] == "BW", line_number: index + 1)
         end
       elsif match = DURATION_RE.match(line)
         set_count = (match[:sets] || 1).to_i
@@ -55,7 +55,7 @@ class WeightroomDotUkParser
           if match[:units].starts_with?("min")
             duration *= 60
           end
-          workout.exercise_sets << Parser::ExerciseSet.new(exercise: current_exercise, duration_seconds: duration)
+          workout.exercise_sets << Parser::ExerciseSet.new(exercise: current_exercise, duration_seconds: duration, line_number: index + 1)
         end
       else
         if !line.chomp.empty?

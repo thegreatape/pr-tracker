@@ -47,6 +47,7 @@ class Parser
     :weight_lbs,
     :reps,
     :exercise,
+    :line_number,
     keyword_init: true
   )
 

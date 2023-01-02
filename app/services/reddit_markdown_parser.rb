@@ -26,19 +26,24 @@ class RedditMarkdownParser
   LINE_OR_SUPERSET_RE = /\n|\s*- SS w\/\s*/
   TOP_SET_RE = /(?<name>[\w\s]*?)(\s*-\s*)\s*\d+\s*x\s*\d+,\s*\d+\s*x\s*\d+/
 
+  SplitLine = Struct.new(:line, :original_text_index)
+
   def parse(contents)
     workout = Parser::Workout.new(exercise_sets: [])
-    lines = contents.split(LINE_OR_SUPERSET_RE).flat_map do |line|
+    lines = contents.split(LINE_OR_SUPERSET_RE).each_with_index.flat_map do |line, index|
       if match = TOP_SET_RE.match(line)
         top_set, backoff_sets = line.split(/,\s*/)
         backoff_sets = "#{match[:name]} #{backoff_sets}"
-        [top_set, backoff_sets]
+        [SplitLine.new(top_set, index), SplitLine.new(backoff_sets, index)]
       else
-        line
+        SplitLine.new(line, index)
       end
     end
 
-    lines.each do |line|
+    lines.each do |split_line|
+      line = split_line.line
+      index = split_line.original_text_index
+
       if match = SETS_RE.match(line)
         #puts line
         #puts "name: #{match[:name]}"
@@ -64,7 +69,7 @@ class RedditMarkdownParser
           if match[:units] == "kg"
             weight = weight * 2.2
           end
-          workout.exercise_sets << Parser::ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, bodyweight: is_bodyweight)
+          workout.exercise_sets << Parser::ExerciseSet.new(reps: reps.to_i, weight_lbs: weight, exercise: exercise, bodyweight: is_bodyweight, line_number: index+1)
         end
       elsif line.match(COMMENT_RE)
         # ignore

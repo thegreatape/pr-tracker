@@ -13,6 +13,7 @@ class Workout < ApplicationRecord
             duration_seconds: parsed_exercise_set.duration_seconds,
             weight_lbs:       parsed_exercise_set.weight_lbs,
             reps:             parsed_exercise_set.reps,
+            line_number:      parsed_exercise_set.line_number,
             exercise:         exercise
           )
         end
