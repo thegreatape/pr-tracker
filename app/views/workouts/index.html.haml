@@ -1,5 +1,7 @@
 %h1 Workouts
 
+= paginate @workouts
+
 - @workouts.each do |workout|
   %h2= workout.date
   - pr_sets_by_line = workout.exercise_sets.filter {|es| es.pr? }.group_by(&:line_number)
@@ -12,3 +14,5 @@
               %span ⭐️
           %td
             %pre= line
+
+= paginate @workouts
