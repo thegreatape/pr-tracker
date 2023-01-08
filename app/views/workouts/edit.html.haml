@@ -1,0 +1,7 @@
+= turbo_frame_tag @workout do
+  %h2= @workout.date
+  = form_with model: @workout do |f|
+    - exisiting_lines = @workout.raw_text.split("\n")
+    = f.text_area :raw_text, rows: exisiting_lines.count + 2, cols: exisiting_lines.map(&:length).max + 20
+    %p= f.submit
+    = link_to 'Cancel', workout_path(@workout)

@@ -1,0 +1,12 @@
+%h2= workout.date
+- pr_sets_by_line = workout.exercise_sets.filter {|es| es.pr? }.group_by(&:line_number)
+%table.workout
+  %tbody
+    - workout.raw_text.split("\n").each_with_index do |line, index|
+      %tr
+        %td.pr-indicator
+          - if pr_sets_by_line[index + 1].present?
+            %span ⭐️
+        %td
+          %pre= line
+= link_to "Edit", edit_workout_path(workout)
