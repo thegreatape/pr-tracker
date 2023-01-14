@@ -7,5 +7,7 @@ Rails.application.routes.draw do
     get 'latest', on: :collection
   end
 
-  resources :workouts
+  resources :workouts do
+    get 'by_date', on: :collection
+  end
 end

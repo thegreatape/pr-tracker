@@ -1,0 +1,9 @@
+%h1 Workouts By Date
+
+- @dates.each do |date|
+  - if workout = @workouts[date]
+    = turbo_frame_tag workout do
+      = render workout
+  - else
+    %h2= date
+    %button Add New Workout
