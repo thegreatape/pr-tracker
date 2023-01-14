@@ -1,0 +1,7 @@
+%h2= @workout.date
+= form_with model: @workout do |f|
+  - existing_lines = @workout.raw_text&.split("\n") || [""]
+  = f.hidden_field :date
+  = f.text_area :raw_text, rows: existing_lines.count + 2, cols: existing_lines.map(&:length).max + 20
+  %p= f.submit
+  = link_to 'Cancel', @workout.persisted? ? workout_path(@workout) : :back
