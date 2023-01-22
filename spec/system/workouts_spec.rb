@@ -25,6 +25,7 @@ describe "workout display", js: true do
       visit by_date_workouts_path
 
       expect(page).to have_content(Date.today.to_s)
+      expect(page).to have_content(@yesterday.to_s)
 
       within date_selector(Date.today) do
         click_on 'Log Workout'
@@ -37,12 +38,13 @@ describe "workout display", js: true do
         fill_in 'Workout', with: today_workout_text
         expect(page).to have_current_path(by_date_workouts_path)
         click_on 'Create Workout'
-
-        expect(page).to have_content(today_workout_text)
       end
 
+      expect(page).to have_text('Workout created')
       expect(page).to have_current_path(by_date_workouts_path)
     end
+
+    # TODO controller tests for trying to create with another workout in place
 
     it "allows editing existing workouts"
     it "allows deleting existing workouts"

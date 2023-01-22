@@ -3,7 +3,7 @@
 = paginate @workouts
 
 - @workouts.each do |workout|
-  = turbo_frame_tag workout do
+  = turbo_frame_tag workout.date do
     = render workout
 
 = paginate @workouts
