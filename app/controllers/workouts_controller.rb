@@ -6,7 +6,7 @@ class WorkoutsController < ApplicationController
   end
 
   def by_date
-    start_date = Date.parse(params.fetch(:start_date, Date.today))
+    start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today
     page_size = params.fetch(:per_page, DEFAULT_DATES_PER_PAGE)
     @dates = (0..page_size).map {|i| start_date - i.days }
     @workouts = Workout.order(date: :desc).where(date: (@dates.last..@dates.first)).group_by(&:date)
