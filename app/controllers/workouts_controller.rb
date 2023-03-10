@@ -29,13 +29,19 @@ class WorkoutsController < ApplicationController
 
   def create
     @workout = Workout.create_from_parsed(Parser.new.parse(workout_params[:raw_text]), workout_params[:date])
-    redirect_to workout_path(@workout), notice: "Workout created"
+    respond_to do |format|
+      format.html { redirect_to workout_path(@workout), notice: "Workout created" }
+      format.turbo_stream { flash[:now] = "Workout created" }
+    end
   end
 
   def update
     @workout = Workout.find(params[:id])
     if @workout.update(workout_params)
-      redirect_to workout_path(@workout), notice: "Workout updated"
+      respond_to do |format|
+        format.html { redirect_to workout_path(@workout), notice: "Workout updated" }
+        format.turbo_stream { flash[:now] = "Workout updated" }
+      end
     else
       render :edit, status: :unprocessable_entity
     end
