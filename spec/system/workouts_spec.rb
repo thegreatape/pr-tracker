@@ -27,13 +27,13 @@ describe "workout display", js: true do
       expect(page).to have_content(Date.today.to_s)
       expect(page).to have_content(@yesterday.to_s)
 
+      today_workout_text = <<~WORKOUT
+      # Squat
+      250x5x5
+      WORKOUT
+
       within date_selector(Date.today) do
         click_on 'Log Workout'
-
-        today_workout_text = <<~WORKOUT
-        # Squat
-        250x5x5
-        WORKOUT
 
         fill_in 'Workout', with: today_workout_text
         expect(page).to have_current_path(by_date_workouts_path)
@@ -42,11 +42,32 @@ describe "workout display", js: true do
 
       expect(page).to have_text('Workout created')
       expect(page).to have_current_path(by_date_workouts_path)
+      expect(Workout.find_by(date: Date.today).raw_text).to eq(today_workout_text)
     end
 
     # TODO controller tests for trying to create with another workout in place
 
-    it "allows editing existing workouts"
+    it "allows editing existing workouts" do
+      visit by_date_workouts_path
+
+      updated_workout_text = <<~WORKOUT
+      # Squat
+      250x5x5
+      WORKOUT
+
+      within date_selector(@yesterday) do
+        click_on 'Edit'
+
+        fill_in 'Workout', with: updated_workout_text
+        expect(page).to have_current_path(by_date_workouts_path)
+        click_on 'Update Workout'
+      end
+
+      expect(page).to have_text('Workout updated')
+      expect(page).to have_current_path(by_date_workouts_path)
+      expect(Workout.find_by(date: @yesterday).raw_text).to eq(updated_workout_text)
+    end
+
     it "allows deleting existing workouts"
     it "allows cancelling adding a new workout"
     it "allows cancelling editing an existing workout"
