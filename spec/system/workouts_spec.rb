@@ -78,7 +78,30 @@ describe "workout display", js: true do
       expect(Workout.find_by(date: @yesterday)).to be_nil
     end
 
-    it "allows cancelling adding a new workout"
-    it "allows cancelling editing an existing workout"
+    it "allows cancelling adding a new workout" do
+      visit by_date_workouts_path
+
+      within date_selector(Date.today) do
+        click_on 'Log Workout'
+
+        expect(page).to have_no_text('Log Workout')
+        click_on 'Cancel'
+        expect(page).to have_text('Log Workout')
+        expect(page).to have_current_path(by_date_workouts_path)
+      end
+    end
+
+    it "allows cancelling editing an existing workout" do
+      visit by_date_workouts_path
+
+      within date_selector(@yesterday) do
+        click_on 'Edit'
+
+        expect(page).to have_no_text('Edit')
+        click_on 'Cancel'
+        expect(page).to have_text('Edit')
+        expect(page).to have_current_path(by_date_workouts_path)
+      end
+    end
   end
 end
