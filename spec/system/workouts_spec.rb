@@ -1,24 +1,47 @@
 require 'rails_helper'
 
 describe "workout display", js: true do
+  before :each do
+    @yesterday = Date.today - 1.day
+    @yesterday_workout_text = <<~WORKOUT
+      # Deadlift
+      300x3
+
+      # BSS
+      100x10x5
+    WORKOUT
+    @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(@yesterday_workout_text), @yesterday)
+  end
+
+  def date_selector(date)
+    "[id='workout-on-#{date.strftime('%Y-%m-%d')}']"
+  end
+
+  def workout_contents(date)
+    within "#{date_selector(date)} table.workout tbody" do
+      return page.all('tr').map(&:text)
+    end
+  end
+
   describe "PR display" do
-    it "shows PRs inline on workout list"
+    it "shows PRs inline on workout list" do
+      first_bss_set = @yesterday_workout.exercise_sets.find do |exercise_set|
+        exercise_set.exercise.name == "Bulgarian Split Squat"
+      end
+      first_bss_set.update!(pr: true, latest_pr: true)
+
+      visit workouts_path
+      expect(workout_contents(@yesterday)).to eq([
+        "# Deadlift",
+        "300x3",
+        "",
+        "# BSS",
+        "⭐️\t\n100x10x5",
+      ])
+    end
   end
 
   describe "CRUD" do
-    before :each do
-      @yesterday = Date.today - 1.day
-      @yesterday_workout_text = <<~WORKOUT
-      # Deadlift
-      300x3
-      WORKOUT
-      @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(@yesterday_workout_text), @yesterday)
-    end
-
-    def date_selector(date)
-      "[id='workout-on-#{date.strftime('%Y-%m-%d')}']"
-    end
-
     it "allows adding a new workout to a date without an existing workout" do
       visit workouts_path
 
