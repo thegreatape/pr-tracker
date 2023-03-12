@@ -1,5 +1,5 @@
 .date-pagination
-  = link_to "<- Previous", by_date_workouts_path(start_date: @prev_page_date)
+  = link_to "<- Previous", workouts_path(start_date: @prev_page_date)
   |
-  = link_to "Next ->", by_date_workouts_path(start_date: @next_page_date)
+  = link_to "Next ->", workouts_path(start_date: @next_page_date)
 

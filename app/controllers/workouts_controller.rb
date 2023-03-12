@@ -2,10 +2,6 @@ class WorkoutsController < ApplicationController
   DEFAULT_DATES_PER_PAGE = 20
 
   def index
-    @workouts = Workout.order(date: :desc).page(params[:page])
-  end
-
-  def by_date
     start_date = params[:start_date] ? Date.parse(params[:start_date]) : Date.today
     page_size = params.fetch(:per_page, DEFAULT_DATES_PER_PAGE)
     @dates = (0..page_size).map {|i| start_date - i.days }

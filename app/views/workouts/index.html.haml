@@ -1,9 +1,13 @@
 %h1 Workouts
 
-= paginate @workouts
+= render "date_pagination"
 
-- @workouts.each do |workout|
-  = turbo_frame_tag date_frame_id(workout.date) do
-    = render workout
+- @dates.each do |date|
+  = turbo_frame_tag date_frame_id(date) do
+    - if workout = @workouts[date]&.first
+      = render workout
+    - else
+      %h2= date
+      = link_to "Log Workout", new_workout_path(date: date)
 
-= paginate @workouts
+= render "date_pagination"
