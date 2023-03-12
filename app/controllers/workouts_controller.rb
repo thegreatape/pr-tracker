@@ -47,6 +47,16 @@ class WorkoutsController < ApplicationController
     end
   end
 
+  def destroy
+    workout = Workout.find(params[:id])
+    @date = workout.date
+    workout.destroy
+    respond_to do |format|
+      format.html { redirect_to :back, notice: "Workout deleted" }
+      format.turbo_stream { flash[:now] = "Workout deleted" }
+    end
+  end
+
   def workout_params
     params.require(:workout).permit(:date, :raw_text)
   end

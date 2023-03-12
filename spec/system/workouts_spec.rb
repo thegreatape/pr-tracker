@@ -18,7 +18,7 @@ describe "workout display", js: true do
     end
 
     def date_selector(date)
-      "[id='#{date.strftime('%Y-%m-%d')}']"
+      "[id='workout-on-#{date.strftime('%Y-%m-%d')}']"
     end
 
     it "allows adding a new workout to a date without an existing workout" do
@@ -45,8 +45,6 @@ describe "workout display", js: true do
       expect(Workout.find_by(date: Date.today).raw_text).to eq(today_workout_text)
     end
 
-    # TODO controller tests for trying to create with another workout in place
-
     it "allows editing existing workouts" do
       visit by_date_workouts_path
 
@@ -68,7 +66,18 @@ describe "workout display", js: true do
       expect(Workout.find_by(date: @yesterday).raw_text).to eq(updated_workout_text)
     end
 
-    it "allows deleting existing workouts"
+    it "allows deleting existing workouts" do
+      visit by_date_workouts_path
+
+      within date_selector(@yesterday) do
+        click_on 'Delete'
+      end
+
+      expect(page).to have_text('Workout deleted')
+      expect(page).to have_current_path(by_date_workouts_path)
+      expect(Workout.find_by(date: @yesterday)).to be_nil
+    end
+
     it "allows cancelling adding a new workout"
     it "allows cancelling editing an existing workout"
   end

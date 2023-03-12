@@ -10,3 +10,4 @@
         %td
           %pre= line
 = link_to "Edit", edit_workout_path(workout)
+= link_to "Delete", workout_path(workout), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Really?!?" }

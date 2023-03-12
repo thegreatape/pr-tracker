@@ -3,7 +3,7 @@
 = render "date_pagination"
 
 - @dates.each do |date|
-  = turbo_frame_tag date do
+  = turbo_frame_tag date_frame_id(date) do
     - if workout = @workouts[date]&.first
       = render workout
     - else
