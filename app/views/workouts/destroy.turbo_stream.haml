@@ -1,4 +1,4 @@
 = turbo_stream.update("flash", partial: 'layouts/flash')
-= turbo_stream.update @date do
+= turbo_stream.update date_frame_id(@date) do
   %h2= @date
   = link_to "Log Workout", new_workout_path(date: @date)
