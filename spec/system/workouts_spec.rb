@@ -64,6 +64,10 @@ describe "workout display", js: true do
       expect(page).to have_text('Workout created')
       expect(page).to have_current_path(workouts_path)
       expect(Workout.find_by(date: Date.today).raw_text).to eq(today_workout_text)
+
+      within date_selector(Date.today) do
+        expect(page).to have_text("Edit")
+      end
     end
 
     it "allows editing existing workouts" do
@@ -97,6 +101,10 @@ describe "workout display", js: true do
       expect(page).to have_text('Workout deleted')
       expect(page).to have_current_path(workouts_path)
       expect(Workout.find_by(date: @yesterday)).to be_nil
+
+      within date_selector(@yesterday) do
+        expect(page).to have_text("Log Workout")
+      end
     end
 
     it "allows cancelling adding a new workout" do
