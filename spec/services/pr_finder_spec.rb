@@ -1,27 +1,32 @@
 require 'rails_helper'
 
 describe PrFinder do
+  before(:each) do
+    @user = FactoryBot.create(:user)
+    @other_user = FactoryBot.create(:user)
+  end
+
   it "reports rep PRs over time" do
     last_week = Date.today - 1.week
     last_week_workout_text = <<~WORKOUT
     # Deadlift
     270x5x3
     WORKOUT
-    last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week)
+    last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week, @user.id)
 
     yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
     # Deadlift
     265x5x3
     WORKOUT
-    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday)
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
 
     today = Date.today
     today_workout_text = <<~WORKOUT
     # Deadlift
     300x3
     WORKOUT
-    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
 
     expect(ExerciseSet.pr_sets.count).to eq(0)
     PrFinder.update
@@ -44,14 +49,14 @@ describe PrFinder do
     # Deadlift
     290x3
     WORKOUT
-    last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week)
+    last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week, @user.id)
 
     yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
     # Deadlift
     300x3
     WORKOUT
-    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday)
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
 
     today = Date.today
     today_workout_text = <<~WORKOUT
@@ -59,7 +64,7 @@ describe PrFinder do
     # Deadlift
     300x3
     WORKOUT
-    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
 
     expect(ExerciseSet.pr_sets.count).to eq(0)
     PrFinder.update
@@ -84,7 +89,7 @@ describe PrFinder do
     # Deadlift
     300x3
     WORKOUT
-    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday)
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
 
     today = Date.today
     today_workout_text = <<~WORKOUT
@@ -92,7 +97,7 @@ describe PrFinder do
     # Deadlift
     310x3
     WORKOUT
-    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today)
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
 
     expect(ExerciseSet.pr_sets.count).to eq(0)
     PrFinder.update
@@ -116,5 +121,37 @@ describe PrFinder do
 
     today_set = today_workout.exercise_sets.first
     expect(today_set).to_not be_pr
+  end
+
+  it "separates rep PRs by user" do
+    today = Date.today
+    today_workout_text = <<~WORKOUT
+    # Deadlift
+    300x3
+    WORKOUT
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
+
+    yesterday = today - 1.day
+    other_user_today_workout_text = <<~WORKOUT
+    # Deadlift
+    310x3
+    WORKOUT
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(other_user_today_workout_text), yesterday, @other_user.id)
+
+    expect(ExerciseSet.pr_sets.count).to eq(0)
+    PrFinder.update
+    expect(ExerciseSet.pr_sets.count).to eq(2)
+
+    yesterday_pr = yesterday_workout.exercise_sets.pr_sets.first
+    expect(yesterday_pr.exercise.name).to eq("Deadlift")
+    expect(yesterday_pr.reps).to eq(3)
+    expect(yesterday_pr.weight_lbs).to eq(310)
+    expect(yesterday_pr.user).to eq(@other_user)
+
+    today_pr = today_workout.exercise_sets.pr_sets.first
+    expect(today_pr.exercise.name).to eq("Deadlift")
+    expect(today_pr.reps).to eq(3)
+    expect(today_pr.weight_lbs).to eq(300)
+    expect(today_pr.user).to eq(@user)
   end
 end

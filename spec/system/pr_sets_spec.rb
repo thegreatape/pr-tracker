@@ -2,6 +2,9 @@ require 'rails_helper'
 
 describe "PR display" do
   before :each do
+    @user = FactoryBot.create(:user)
+    sign_in @user
+
     @last_week = Date.today - 1.week
     last_week_workout_text = <<~WORKOUT
     # Deadlift
@@ -10,7 +13,7 @@ describe "PR display" do
     # Squat
     225x5
     WORKOUT
-    @last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), @last_week)
+    @last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), @last_week, @user.id)
 
     @yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
@@ -20,13 +23,33 @@ describe "PR display" do
     # Bench
     180x3
     WORKOUT
-    @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), @yesterday)
+    @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), @yesterday, @user.id)
 
     PrFinder.update
 
     @bench_press = Exercise.find_by(name: "Bench Press")
     @deadlift = Exercise.find_by(name: "Deadlift")
     @squat = Exercise.find_by(name: "Squat")
+  end
+
+  it "only shows the current user's PRs" do
+    other_user = FactoryBot.create(:user)
+    last_week_workout_text = <<~WORKOUT
+    # Front Squat
+    255x5x3
+    WORKOUT
+    Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), Date.today - 7.days, other_user.id)
+    yesterday_workout_text = <<~WORKOUT
+    # Front Squat
+    265x5x3
+    WORKOUT
+    Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), @yesterday, other_user.id)
+    PrFinder.update
+
+    visit latest_pr_sets_path
+
+    expect(page).to have_text("Bench")
+    expect(page).to have_no_text("Front Squat")
   end
 
   it "shows the latest PRs by date" do

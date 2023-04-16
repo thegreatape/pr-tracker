@@ -2,6 +2,9 @@ require 'rails_helper'
 
 describe "workout display", js: true do
   before :each do
+    @user = FactoryBot.create(:user)
+    sign_in @user
+
     @yesterday = Date.today - 1.day
     @yesterday_workout_text = <<~WORKOUT
       # Deadlift
@@ -10,7 +13,7 @@ describe "workout display", js: true do
       # BSS
       100x10x5
     WORKOUT
-    @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(@yesterday_workout_text), @yesterday)
+    @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(@yesterday_workout_text), @yesterday, @user.id)
   end
 
   def date_selector(date)

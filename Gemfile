@@ -49,6 +49,7 @@ gem "dartsass-rails", "~> 0.4.1"
 # gem "image_processing", "~> 1.2"
 
 gem "haml-rails", "~> 2.0"
+gem "devise"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -73,5 +74,6 @@ group :test do
   gem "capybara"
   gem "webdrivers"
   gem 'apparition'
+  gem 'factory_bot_rails'
 end
 
