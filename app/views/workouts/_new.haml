@@ -1,0 +1,7 @@
+.card
+  .card-header
+    %h2.card-header-title=date
+  .card-content
+    %p No workout logged for this date.
+  .card-footer
+    = link_to "Log Workout", new_workout_path(date: date), class: "card-footer-item"

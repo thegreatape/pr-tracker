@@ -13,4 +13,7 @@
       = turbo_frame_tag "flash" do
         = render 'layouts/flash'
     = render 'layouts/nav'
-    = yield
+
+    %section.section
+      .container
+        = yield
