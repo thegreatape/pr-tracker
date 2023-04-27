@@ -1,6 +1,7 @@
 %h1.title.is-2 Workouts
 
-= render "date_pagination"
+.block
+  = render "date_pagination"
 
 - @dates.each do |date|
   .block
@@ -10,4 +11,5 @@
       - else
         = render partial: "new", locals: {date: date}
 
-= render "date_pagination"
+.block
+  = render "date_pagination"
