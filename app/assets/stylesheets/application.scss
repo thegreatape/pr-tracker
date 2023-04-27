@@ -1,4 +1,7 @@
-// Sassy
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+$navbar-breakpoint: 769px; // tablet;
+
 @import 'bulma';
 
 .flash {
