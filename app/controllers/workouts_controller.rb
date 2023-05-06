@@ -27,6 +27,10 @@ class WorkoutsController < ApplicationController
 
   def create
     @workout = Workout.create_from_parsed(Parser.new.parse(workout_params[:raw_text]), workout_params[:date], current_user.id)
+
+    PrFinder.update
+    @workout.reload
+
     respond_to do |format|
       format.html { redirect_to workout_path(@workout), notice: "Workout created" }
       format.turbo_stream { flash[:now] = "Workout created" }
@@ -36,6 +40,10 @@ class WorkoutsController < ApplicationController
   def update
     @workout = current_user.workouts.find(params[:id])
     if @workout.update(workout_params)
+
+      PrFinder.update
+      @workout.reload
+
       respond_to do |format|
         format.html { redirect_to workout_path(@workout), notice: "Workout updated" }
         format.turbo_stream { flash[:now] = "Workout updated" }
