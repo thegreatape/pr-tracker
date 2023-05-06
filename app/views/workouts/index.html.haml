@@ -1,15 +1,15 @@
-%section.section
-  .container
-    %h1 Workouts
+%h1.title.is-2 Workouts
 
-    = render "date_pagination"
+.block
+  = render "date_pagination"
 
-    - @dates.each do |date|
-      = turbo_frame_tag date_frame_id(date) do
-        - if workout = @workouts[date]&.first
-          = render workout
-        - else
-          %h2= date
-          = link_to "Log Workout", new_workout_path(date: date)
+- @dates.each do |date|
+  .block
+    = turbo_frame_tag date_frame_id(date) do
+      - if workout = @workouts[date]&.first
+        = render workout
+      - else
+        = render partial: "new", locals: {date: date}
 
-    = render "date_pagination"
+.block
+  = render "date_pagination"
