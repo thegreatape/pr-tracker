@@ -1,10 +1,10 @@
-%h1 PRs
+%h1.title.is-2 PRs
 
 - sets_by_exercise = @pr_sets.group_by {|pr_set| pr_set.exercise }
 
 - sets_by_exercise.each do |exercise, lift_sets|
-  %h2= exercise.name
-  %table{id: "exercise-#{exercise.id}"}
+  %h2.title.is-3= exercise.name
+  %table.table{id: "exercise-#{exercise.id}"}
     %thead
       %tr
         %th Reps
