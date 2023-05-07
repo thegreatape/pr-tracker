@@ -136,4 +136,61 @@ describe "workout display", js: true do
       end
     end
   end
+
+  describe "live updates when PRs happen" do
+    it "updates new and existing workouts" do
+      # make sure initial PRs are calculated
+      PrFinderWorker.new.perform
+
+      today = Date.today
+      visit workouts_path
+
+      # expect yesterday's DL to be a PR
+      within date_selector(@yesterday) do
+        expect(workout_contents(@yesterday)).to eq([
+          "# Deadlift",
+          "⭐️\t\n300x3",
+          "",
+          "# BSS",
+          "⭐️\t\n100x10x5",
+        ])
+      end
+
+      #
+      # add a new PR today that beats yesterday
+      #
+
+      # expect yesterday's DL to not longer be a PR
+      within date_selector(@yesterday) do
+      end
+
+      # expect today's DL to be a PR
+      within date_selector(today) do
+      end
+
+      #
+      # edit yesterday's PR to beat today's
+      #
+
+      # expect yesterday's DL to be a PR
+      within date_selector(@yesterday) do
+      end
+
+      # expect today's DL to not longer be a PR
+      within date_selector(today) do
+      end
+
+      #
+      # edit today's PR to beat yesterday's again
+      #
+
+      # expect yesterday's DL to not longer be a PR
+      within date_selector(@yesterday) do
+      end
+
+      # expect today's DL to be a PR
+      within date_selector(today) do
+      end
+    end
+  end
 end
