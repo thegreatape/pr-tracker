@@ -9,6 +9,7 @@ class PrFinder
     modified_rows = []
     ActiveRecord::Base.transaction do
 
+      # TODO if we do it this way we can't tell when we've invalidated old PRs...
       ActiveRecord::Base.connection.execute <<-SQL
         update exercise_sets set pr = false, latest_pr = false
       SQL
