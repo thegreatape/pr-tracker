@@ -12,5 +12,5 @@
             %td
               %pre= line
   .card-footer
-    = link_to "Edit", edit_workout_path(workout), class: "card-footer-item"
-    = link_to "Delete", workout_path(workout), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Really?!?" }, class: 'card-footer-item'
+    = link_to "Edit", edit_workout_path(workout), class: "card-footer-item button"
+    = link_to "Delete", workout_path(workout), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Really?!?" }, class: 'card-footer-item button'
