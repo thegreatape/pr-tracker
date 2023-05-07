@@ -37,7 +37,7 @@ class WorkoutsController < ApplicationController
 
   def update
     @workout = current_user.workouts.find(params[:id])
-    if @workout.update(workout_params)
+    if @workout.update_from_form(workout_params)
       PrFinderWorker.perform_async
 
       respond_to do |format|
