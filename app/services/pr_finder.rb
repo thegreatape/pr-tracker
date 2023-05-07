@@ -6,13 +6,14 @@ class PrFinder
   end
 
   def self.update
+    modified_rows = []
     ActiveRecord::Base.transaction do
 
       ActiveRecord::Base.connection.execute <<-SQL
         update exercise_sets set pr = false, latest_pr = false
       SQL
 
-      ActiveRecord::Base.connection.execute <<-SQL
+      modified_rows = ActiveRecord::Base.connection.execute <<-SQL
         with rep_maxes_in_workout as (
           select
             max(weight_lbs) weight_lbs,
@@ -51,7 +52,9 @@ class PrFinder
             updated_at = now()
         from ranked_maxes
         where ranked_maxes.exercise_set_id = exercise_sets.id
+        returning workout_id
       SQL
     end
+    return modified_rows.map{ |r| r["workout_id"]}.uniq
   end
 end
