@@ -38,17 +38,24 @@ class PrFinder
            row_number() over (partition by user_id, exercise_id, reps order by weight_lbs desc)
          from maxes_with_previous_max
          where (max_to_date > prev_max_weight or prev_max_weight is null)
+      ), sets_for_update as (
+      select
+        exercise_sets.id as exercise_set_id,
+        ranked_maxes.exercise_set_id is not null as pr,
+        ranked_maxes.exercise_set_id is not null and row_number = 1 as latest_pr
+        from exercise_sets
+          left join ranked_maxes on ranked_maxes.exercise_set_id = exercise_sets.id
+        where
+          (ranked_maxes.exercise_set_id is not null and exercise_sets.pr = false)
+          or
+          (ranked_maxes.exercise_set_id is null and exercise_sets.pr = true)
       )
       update exercise_sets
-      set pr = (ranked_maxes.exercise_set_id = exercise_sets.id and ranked_maxes.exercise_set_id is not null),
-          latest_pr = (ranked_maxes.exercise_set_id = exercise_sets.id and row_number = 1 and ranked_maxes.exercise_set_id is not null),
+      set pr = sets_for_update.pr,
+          latest_pr = sets_for_update.latest_pr,
           updated_at = now()
-      from exercise_sets sets
-        left join ranked_maxes on ranked_maxes.exercise_set_id = sets.id
-      where
-        (ranked_maxes.exercise_set_id = exercise_sets.id and sets.pr = false)
-        or
-        (ranked_maxes.exercise_set_id is null and sets.pr = true)
+      from sets_for_update
+      where exercise_sets.id = sets_for_update.exercise_set_id
       returning exercise_sets.workout_id
     SQL
 
