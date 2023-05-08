@@ -48,12 +48,16 @@ class PrFinder
            where (max_to_date > prev_max_weight or prev_max_weight is null)
         )
         update exercise_sets
-        set pr = true,
-            latest_pr = (row_number = 1),
+        set pr = (ranked_maxes.exercise_set_id = exercise_sets.id),
+            latest_pr = (ranked_maxes.exercise_set_id = exercise_sets.id and row_number = 1),
             updated_at = now()
-        from ranked_maxes
-        where ranked_maxes.exercise_set_id = exercise_sets.id
-        returning workout_id
+        from exercise_sets sets
+          left join ranked_maxes on ranked_maxes.exercise_set_id = sets.id
+        where
+          (ranked_maxes.exercise_set_id = exercise_sets.id and sets.pr = false)
+          or
+          (ranked_maxes.exercise_set_id is null and sets.pr = true)
+        returning exercise_sets.workout_id
       SQL
     end
     return modified_rows.map{ |r| r["workout_id"]}.uniq
