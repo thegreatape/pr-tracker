@@ -1,4 +1,6 @@
-.card
+= turbo_stream_from workout
+
+.card{id: dom_id(workout)}
   .card-content
     %h2.title.is-5=workout.date
     - pr_sets_by_line = workout.exercise_sets.filter {|es| es.pr? }.group_by(&:line_number)

@@ -8,5 +8,5 @@
         .control
           = f.text_area :raw_text, class: 'textarea'
     .card-footer
-      %button.card-footer-item.button{type: :submit} Update Workout
+      %button.card-footer-item.button{type: :submit} #{@workout.persisted? ? "Update" : "Create"} Workout
       = link_to 'Cancel', @workout.persisted? ? workout_path(@workout) : :back, class: "card-footer-item button"

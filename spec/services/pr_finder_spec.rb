@@ -29,7 +29,8 @@ describe PrFinder do
     today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
 
     expect(ExerciseSet.pr_sets.count).to eq(0)
-    PrFinder.update
+    updated_workout_ids = PrFinder.update
+    expect(updated_workout_ids).to match_array([last_week_workout.id, today_workout.id])
     expect(ExerciseSet.pr_sets.count).to eq(2)
 
     last_week_pr = last_week_workout.exercise_sets.pr_sets.first
@@ -113,7 +114,10 @@ describe PrFinder do
 
     today_workout.exercise_sets.first.update(weight_lbs: 270)
 
-    PrFinder.update
+    updated_workouts = PrFinder.update
+    expect(updated_workouts).to eq([today_workout.id])
+    yesterday_workout.reload
+    today_workout.reload
     expect(ExerciseSet.pr_sets.count).to eq(1)
 
     yesterday_set = yesterday_workout.exercise_sets.first
