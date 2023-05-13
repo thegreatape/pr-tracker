@@ -2,11 +2,12 @@ databases:
   - name: prtracker
     databaseName: prtracker
     user: prtracker
+    region: oregon
 
 services:
   - type: web
     name: web
-    region: ohio
+    region: oregon
     env: ruby
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
@@ -25,14 +26,14 @@ services:
 
   - type: redis
     name: sidekiq-redis
-    region: ohio
+    region: oregon
     maxmemoryPolicy: noeviction
     ipAllowList: [] # only allow internal connections
 
   - type: worker
     name: sidekiq-worker
     env: ruby
-    region: ohio
+    region: oregon
     buildCommand: bundle install
     startCommand: bundle exec sidekiq
     envVars:
