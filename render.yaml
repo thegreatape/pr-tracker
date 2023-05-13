@@ -6,7 +6,6 @@ databases:
 services:
   - type: web
     name: web
-    region: ohio
     env: ruby
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
@@ -25,14 +24,12 @@ services:
 
   - type: redis
     name: sidekiq-redis
-    region: ohio
     maxmemoryPolicy: noeviction
     ipAllowList: [] # only allow internal connections
 
   - type: worker
     name: sidekiq-worker
     env: ruby
-    region: ohio
     buildCommand: bundle install
     startCommand: bundle exec sidekiq
     envVars:
