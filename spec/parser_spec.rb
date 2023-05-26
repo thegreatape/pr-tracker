@@ -224,5 +224,17 @@ describe Parser do
       ohp_sets = workout.exercise_sets.filter {|s| s.exercise.name == "OHP"}
       expect(ohp_sets.map(&:line_number)).to all eq(2)
     end
+
+    it "parses GG-style E/M/H notation around reps" do
+
+      workout_text = <<~WORKOUT
+      * Log - 9(E), 6/5/4/4x115
+      WORKOUT
+
+      workout = Parser.new.parse(workout_text)
+      expect(workout.exercise_sets.map(&:weight_lbs)).to all eq(115)
+      expect(workout.exercise_sets.map(&:reps)).to match_array([9,6,5,4,4])
+      expect(workout.exercise_sets.count).to eq(5)
+    end
   end
 end
