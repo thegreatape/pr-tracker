@@ -52,6 +52,10 @@ describe PrFinder do
     WORKOUT
     last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week, @user.id)
 
+    expect(ExerciseSet.pr_sets.count).to eq(0)
+    PrFinder.update
+    expect(ExerciseSet.pr_sets.count).to eq(1)
+
     yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
     # Deadlift
@@ -67,7 +71,7 @@ describe PrFinder do
     WORKOUT
     today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
 
-    expect(ExerciseSet.pr_sets.count).to eq(0)
+    expect(ExerciseSet.pr_sets.count).to eq(1)
     PrFinder.update
     expect(ExerciseSet.pr_sets.count).to eq(2)
 
