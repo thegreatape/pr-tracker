@@ -7,16 +7,36 @@ class PrFinder
 
   def self.update
     modified_rows = ActiveRecord::Base.connection.execute <<-SQL
-      with rep_maxes_in_workout as (
+      with max_weights_in_workout as (
+	      select max(weight_lbs) as weight_lbs,
+	          workout_id,
+	          reps,
+	          exercise_id,
+	          user_id
+		  from exercise_sets
+          group by workout_id, reps, exercise_id, user_id
+      ),
+      rep_maxes_in_workout as (
         select
-          max(weight_lbs) weight_lbs,
+          exercise_sets.weight_lbs,
           max(id) as exercise_set_id,
-          workout_id,
-          reps,
-          exercise_id,
-          user_id
+          exercise_sets.workout_id,
+          exercise_sets.reps,
+          exercise_sets.exercise_id,
+          exercise_sets.user_id
         from exercise_sets
-        group by workout_id, reps, exercise_id, user_id
+           join max_weights_in_workout on
+             exercise_sets.workout_id = max_weights_in_workout.workout_id AND
+             exercise_sets.reps = max_weights_in_workout.reps AND
+             exercise_sets.exercise_id = max_weights_in_workout.exercise_id AND
+             exercise_sets.user_id = max_weights_in_workout.user_id AND
+             exercise_sets.weight_lbs = max_weights_in_workout.weight_lbs
+        group by
+             exercise_sets.weight_lbs,
+             exercise_sets.workout_id,
+             exercise_sets.reps,
+             exercise_sets.exercise_id,
+             exercise_sets.user_id
       ), maxes_by_date as (
         select
            weight_lbs,

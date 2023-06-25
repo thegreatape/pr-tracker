@@ -88,6 +88,31 @@ describe PrFinder do
     expect(yesterday_pr.latest_pr).to be true
   end
 
+  it "picks the correct set to mark as a PR" do
+    yesterday = Date.today - 1.day
+    yesterday_workout_text = <<~WORKOUT
+    * Deadlift - 3x300
+    WORKOUT
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
+
+    today = Date.today
+    today_workout_text = <<~WORKOUT
+
+    * Deadlift - 3x310, 3x3x270
+    WORKOUT
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
+
+    PrFinder.update
+
+    latest_prs = ExerciseSet.pr_sets.where(latest_pr: true)
+    expect(latest_prs.count).to eq(1)
+
+    pr_set = latest_prs.first
+    expect(pr_set.workout.date).to eq(today)
+    expect(pr_set.reps).to eq(3)
+    expect(pr_set.weight_lbs).to eq(310)
+  end
+
   it "updates prior prs if an edit renders them no longer valid" do
     yesterday = Date.today - 1.day
     yesterday_workout_text = <<~WORKOUT
