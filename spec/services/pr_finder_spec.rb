@@ -137,23 +137,42 @@ describe PrFinder do
 
     yesterday_set = yesterday_workout.exercise_sets.first
     expect(yesterday_set).to be_pr
+    expect(yesterday_set).to_not be_latest_pr
 
     today_set = today_workout.exercise_sets.first
     expect(today_set).to be_pr
+    expect(today_set).to be_latest_pr
 
     today_workout.exercise_sets.first.update(weight_lbs: 270)
 
     updated_workouts = PrFinder.update
-    expect(updated_workouts).to eq([today_workout.id])
+    expect(updated_workouts).to eq([yesterday_workout.id, today_workout.id])
     yesterday_workout.reload
     today_workout.reload
     expect(ExerciseSet.pr_sets.count).to eq(1)
 
     yesterday_set = yesterday_workout.exercise_sets.first
     expect(yesterday_set).to be_pr
+    expect(yesterday_set).to be_latest_pr
 
     today_set = today_workout.exercise_sets.first
     expect(today_set).to_not be_pr
+    expect(today_set).to_not be_latest_pr
+  end
+
+  it "updates prior prs if an edit renders them now the latest PR" do
+    yesterday = Date.today - 1.day
+    yesterday_workout_text = <<~WORKOUT
+    # Deadlift
+    300x3
+    WORKOUT
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
+    yesterday_workout.exercise_sets.first.update!(latest_pr: false)
+
+    expect(yesterday_workout.exercise_sets.first).to_not be_latest_pr
+    PrFinder.update
+    yesterday_workout.reload
+    expect(yesterday_workout.exercise_sets.first).to be_latest_pr
   end
 
   it "separates rep PRs by user" do

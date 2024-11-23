@@ -67,7 +67,9 @@ class PrFinder
           left join ranked_maxes on ranked_maxes.exercise_set_id = exercise_sets.id
         where
           (ranked_maxes.exercise_set_id is not null and
-             (exercise_sets.pr = false or (exercise_sets.latest_pr = true and row_number > 1)))
+             (exercise_sets.pr = false
+              or (exercise_sets.latest_pr = true and row_number > 1))
+              or (exercise_sets.latest_pr = false and row_number = 1))
           or
           (ranked_maxes.exercise_set_id is null and exercise_sets.pr = true)
       )
