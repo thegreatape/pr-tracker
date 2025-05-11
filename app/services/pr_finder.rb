@@ -71,7 +71,7 @@ class PrFinder
       ),
       sets_for_update as (
         select
-          ranked_maxes.exercise_set_id as exercise_set_id,
+          exercise_sets.id as exercise_set_id,
           ranked_maxes.exercise_set_id is not null as pr,
           ranked_maxes.exercise_set_id is not null and row_number = 1 as latest_pr
         from exercise_sets
