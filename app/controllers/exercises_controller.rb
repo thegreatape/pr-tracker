@@ -5,17 +5,9 @@ class ExercisesController < ApplicationController
 
   def search
     @exercise = current_user.exercises.find(params[:exercise_id])
-    @search_results = current_user.exercises
-      .where("name ILIKE ?", "%#{params[:query]}%")
-      .where.not(id: @exercise.id)
-      .where.not(id: @exercise.synonyms.pluck(:id))
-      .where(synonym_of_id: nil)
-      .limit(5)
+    @search_results = current_user.search_exercises(params[:query], exclude_exercise: @exercise)
     
-    respond_to do |format|
-      format.html { render partial: "search_results" }
-      format.turbo_stream { render partial: "search_results" }
-    end
+    render partial: "search_results", locals: { search_results: @search_results, exercise: @exercise }
   end
 
   def add_synonym
