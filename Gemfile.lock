@@ -68,9 +68,6 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
-    apparition (0.6.0)
-      capybara (~> 3.13, < 4)
-      websocket-driver (>= 0.6.5)
     bcrypt (3.1.18)
     bindex (0.8.1)
     bootsnap (1.13.0)
@@ -282,7 +279,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  apparition
   bootsnap
   capybara
   dartsass-rails (~> 0.4.1)
@@ -298,6 +294,7 @@ DEPENDENCIES
   rails (~> 7.0.4)
   redis (~> 4.0)
   rspec-rails
+  selenium-webdriver
   sidekiq
   sprockets-rails
   stimulus-rails

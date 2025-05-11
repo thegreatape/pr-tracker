@@ -6,7 +6,8 @@ require_relative '../config/environment'
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
-require 'capybara/apparition'
+require 'selenium-webdriver'
+Webdrivers::Chromedriver.required_version = "114.0.5735.90"
 
 require 'sidekiq/testing'
 
@@ -46,7 +47,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, type: :system, js: true) do
-    driven_by :apparition
+    driven_by :selenium_chrome_headless
   end
 
   config.include Devise::Test::IntegrationHelpers, type: :system
