@@ -25,11 +25,12 @@ describe "PR display" do
     WORKOUT
     @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), @yesterday, @user.id)
 
-    PrFinder.update
-
     @bench_press = Exercise.find_by(name: "Bench Press")
+    Exercise.create!(name: "Bench", synonym_of: @bench_press)
     @deadlift = Exercise.find_by(name: "Deadlift")
     @squat = Exercise.find_by(name: "Squat")
+
+    PrFinder.update
   end
 
   it "only shows the current user's PRs" do
@@ -48,7 +49,7 @@ describe "PR display" do
 
     visit latest_pr_sets_path
 
-    expect(page).to have_text("Bench")
+    expect(page).to have_text("Bench Press")
     expect(page).to have_no_text("Front Squat")
   end
 
