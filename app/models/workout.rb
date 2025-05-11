@@ -27,7 +27,7 @@ class Workout < ApplicationRecord
   private
   def self.create_sets(parsed_workout, user_id)
     parsed_workout.exercise_sets.map do |parsed_exercise_set|
-      exercise = Exercise.find_or_create_by(name: parsed_exercise_set.exercise.name)
+      exercise = Exercise.find_or_create_by!(name: parsed_exercise_set.exercise.name)
       ExerciseSet.new(
         bodyweight:       parsed_exercise_set.bodyweight,
         duration_seconds: parsed_exercise_set.duration_seconds,
