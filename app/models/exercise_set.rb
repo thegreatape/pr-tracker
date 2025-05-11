@@ -5,6 +5,10 @@ class ExerciseSet < ApplicationRecord
 
   scope :pr_sets, -> { where(pr: true) }
 
+  def grouped_exercise
+    exercise.synonym_of || exercise
+  end
+
   def date
     workout.date
   end

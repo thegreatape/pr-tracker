@@ -2,6 +2,11 @@ require 'rails_helper'
 
 describe "PR display" do
   before :each do
+    @bench_press = Exercise.create!(name: "Bench Press")
+    @bench = Exercise.create!(name: "Bench", synonym_of: @bench_press)
+    @deadlift = Exercise.create!(name: "Deadlift")
+    @squat = Exercise.create!(name: "Squat")
+
     @user = FactoryBot.create(:user)
     sign_in @user
 
@@ -24,11 +29,6 @@ describe "PR display" do
     180x3
     WORKOUT
     @yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), @yesterday, @user.id)
-
-    @bench_press = Exercise.find_by(name: "Bench Press")
-    Exercise.create!(name: "Bench", synonym_of: @bench_press)
-    @deadlift = Exercise.find_by(name: "Deadlift")
-    @squat = Exercise.find_by(name: "Squat")
 
     PrFinder.update
   end
