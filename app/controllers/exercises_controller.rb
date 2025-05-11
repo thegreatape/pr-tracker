@@ -20,4 +20,15 @@ class ExercisesController < ApplicationController
       redirect_to exercises_path, alert: "Failed to add synonym"
     end
   end
+
+  def unlink_synonym
+    @exercise = current_user.exercises.find(params[:id])
+    synonym = current_user.exercises.find(params[:synonym_id])
+    
+    if @exercise.unlink_synonym(synonym)
+      redirect_to exercises_path, notice: "#{synonym.name} unlinked from #{@exercise.name}"
+    else
+      redirect_to exercises_path, alert: "Failed to unlink synonym"
+    end
+  end
 end
