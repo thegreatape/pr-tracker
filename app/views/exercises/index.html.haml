@@ -1,0 +1,25 @@
+%table.table
+  %thead
+    %tr
+      %th Exercise
+      %th Synonyms
+      %th Actions
+  %tbody
+    - @exercises.each do |exercise|
+      %tr
+        %td=exercise.name
+        %td
+          - exercise.synonyms.each do |synonym|
+            %div{ style: "display: flex; align-items: center; margin-bottom: 0.5rem;" }
+              %span{ style: "flex: 1;" }= synonym.name
+              = button_to unlink_synonym_exercise_path(exercise, synonym_id: synonym.id), method: :delete, class: "btn btn-sm btn-link text-danger", style: "padding: 0; margin-left: 0.5rem;", title: "Unlink synonym" do
+                X
+        %td
+          .exercise-search-container{ data: { controller: "exercise-search" } }
+            = form_with url: search_exercises_path, method: :get, data: { action: "submit->exercise-search#search" } do |f|
+              .input-group
+                = f.text_field :query, class: "form-control", placeholder: "Search exercises...", data: { exercise_search_target: "query" }
+                = f.hidden_field :exercise_id, value: exercise.id
+                .input-group-append
+                  = f.submit "Search", class: "btn btn-primary"
+            .search-results-container{ data: { exercise_search_target: "results" } }

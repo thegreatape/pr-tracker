@@ -12,7 +12,7 @@
     - @pr_sets.each do |pr_set|
       %tr
         %td= pr_set.date
-        %td= pr_set.exercise.name
+        %td= pr_set.grouped_exercise.name
         %td= pr_set.reps
         %td= number_to_human(pr_set.weight_lbs, strip_insignificant_zeros: true)
         %td= pr_set.e1rm

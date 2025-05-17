@@ -67,7 +67,6 @@ class RedditMarkdownParser
         # puts "weight: #{match[:weight]}"
 
         name = match[:name].squish.titleize
-        name = Parser::SYNONYMS[name] || name
         exercise = Parser::Exercise.new(name: name)
 
         reps_by_set = if rep_counts = match[:rep_counts]

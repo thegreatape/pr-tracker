@@ -44,6 +44,78 @@ describe PrFinder do
     expect(today_pr.weight_lbs).to eq(300)
   end
 
+  it "marks PRs on synonyms as PRs for the main exercise" do
+    # Create main exercise and synonym
+    bench_press = Exercise.create!(name: "Bench Press")
+    bench = Exercise.create!(name: "Bench", synonym_of: bench_press)
+
+    # Create workouts with the synonym
+    last_week = Date.today - 1.week
+    last_week_workout_text = <<~WORKOUT
+    # Bench
+    185x5x3
+    WORKOUT
+    last_week_workout = Workout.create_from_parsed(Parser.new.parse(last_week_workout_text), last_week, @user.id)
+
+    yesterday = Date.today - 1.day
+    yesterday_workout_text = <<~WORKOUT
+    # Bench
+    190x5x3
+    WORKOUT
+    yesterday_workout = Workout.create_from_parsed(Parser.new.parse(yesterday_workout_text), yesterday, @user.id)
+
+    # Run PR finder
+    expect(ExerciseSet.pr_sets.count).to eq(0)
+    updated_workout_ids = PrFinder.update
+    expect(updated_workout_ids).to match_array([last_week_workout.id, yesterday_workout.id])
+    expect(ExerciseSet.pr_sets.count).to eq(2)
+
+    # Verify both sets are marked as PRs
+    last_week_pr = last_week_workout.exercise_sets.pr_sets.first
+    expect(last_week_pr.exercise.name).to eq("Bench")
+    expect(last_week_pr.reps).to eq(5)
+    expect(last_week_pr.weight_lbs).to eq(185)
+    expect(last_week_pr.latest_pr).to be false
+
+    yesterday_pr = yesterday_workout.exercise_sets.pr_sets.first
+    expect(yesterday_pr.exercise.name).to eq("Bench")
+    expect(yesterday_pr.reps).to eq(5)
+    expect(yesterday_pr.weight_lbs).to eq(190)
+    expect(yesterday_pr.latest_pr).to be true
+
+    # Create a workout with the main exercise name that beats the synonym's PR
+    today = Date.today
+    today_workout_text = <<~WORKOUT
+    # Bench Press
+    195x5x3
+    WORKOUT
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), today, @user.id)
+
+    # Run PR finder again
+    updated_workout_ids = PrFinder.update
+    expect(updated_workout_ids).to match_array([yesterday_workout.id, today_workout.id])
+    expect(ExerciseSet.pr_sets.count).to eq(3)
+
+    # Verify all three sets are marked as PRs
+    last_week_pr = last_week_workout.exercise_sets.pr_sets.first
+    expect(last_week_pr.exercise.name).to eq("Bench")
+    expect(last_week_pr.reps).to eq(5)
+    expect(last_week_pr.weight_lbs).to eq(185)
+    expect(last_week_pr.latest_pr).to be false
+
+    yesterday_pr = yesterday_workout.exercise_sets.pr_sets.first
+    expect(yesterday_pr.exercise.name).to eq("Bench")
+    expect(yesterday_pr.reps).to eq(5)
+    expect(yesterday_pr.weight_lbs).to eq(190)
+    expect(yesterday_pr.latest_pr).to be false
+
+    today_pr = today_workout.exercise_sets.pr_sets.first
+    expect(today_pr.exercise.name).to eq("Bench Press")
+    expect(today_pr.reps).to eq(5)
+    expect(today_pr.weight_lbs).to eq(195)
+    expect(today_pr.latest_pr).to be true
+  end
+
   it "reports now-surpassed rep PRs and marks them not latest" do
     last_week = Date.today - 1.week
     last_week_workout_text = <<~WORKOUT

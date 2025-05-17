@@ -37,7 +37,6 @@ class WeightroomDotUkParser
     contents.split("\n").each_with_index do |line, index|
       if match = EXERCISE_NAME_RE.match(line)
         name = match[:name].squish.titleize
-        name = Parser::SYNONYMS[name] || name
         current_exercise = Parser::Exercise.new(name: name)
       elsif match = SETS_RE.match(line)
         set_count = (match[:sets] || 1).to_i

@@ -10,4 +10,15 @@ Rails.application.routes.draw do
   end
 
   resources :workouts
+  resources :exercises, only: [:index]
+
+  resources :exercises do
+    collection do
+      get :search
+    end
+    member do
+      post :add_synonym
+      delete :unlink_synonym
+    end
+  end
 end

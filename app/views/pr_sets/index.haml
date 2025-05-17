@@ -1,6 +1,6 @@
 %h1.title.is-2 PRs
 
-- sets_by_exercise = @pr_sets.group_by {|pr_set| pr_set.exercise }
+- sets_by_exercise = @pr_sets.group_by {|pr_set| pr_set.grouped_exercise }
 
 - sets_by_exercise.each do |exercise, lift_sets|
   %h2.title.is-3= exercise.name

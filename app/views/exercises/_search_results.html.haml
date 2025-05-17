@@ -1,0 +1,10 @@
+.search-results-list
+  - if search_results.any?
+    %h6 Search Results
+    %ul.list-group
+      - search_results.each do |result|
+        %li.list-group-item.d-flex.justify-content-between.align-items-center
+          = result.name
+          = button_to "Add as Synonym", add_synonym_exercise_path(exercise, synonym_id: result.id), method: :post, class: "btn btn-sm btn-primary"
+  - else
+    %p No exercises found 
