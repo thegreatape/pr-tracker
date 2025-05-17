@@ -31,4 +31,10 @@ class ExercisesController < ApplicationController
       redirect_to exercises_path, alert: "Failed to unlink synonym"
     end
   end
+
+  def toggle_benchmark
+    @exercise = current_user.exercises.find(params[:id])
+    @exercise.update!(benchmark_lift: !@exercise.benchmark_lift)
+    redirect_to exercises_path, notice: "#{@exercise.name} #{@exercise.benchmark_lift ? 'marked' : 'unmarked'} as a benchmark lift"
+  end
 end

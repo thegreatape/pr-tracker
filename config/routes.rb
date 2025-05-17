@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     member do
       post :add_synonym
       delete :unlink_synonym
+      post :toggle_benchmark
     end
   end
 end
