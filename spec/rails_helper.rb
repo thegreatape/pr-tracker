@@ -47,7 +47,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, type: :system, js: true) do
-    driven_by :selenium_chrome_headless
+    driven_by :selenium_headless
   end
 
   config.include Devise::Test::IntegrationHelpers, type: :system
