@@ -15,11 +15,17 @@ class PrSetsController < ApplicationController
 
   def pr_sets(only_latest_pr:)
     exercises = params[:exercise_id] ? Exercise.where(id: params[:exercise_id]) : Exercise.where(benchmark_lift: true)
-    current_user
+    query = current_user
       .exercise_sets
       .pr_sets
       .joins(:exercise, :workout)
-      .where(exercise: exercises, latest_pr: only_latest_pr)
-      .or(current_user.exercise_sets.where(exercise: {synonym_of: exercises}, latest_pr: only_latest_pr))
+      .where(exercise: exercises)
+      .or(current_user.exercise_sets.where(exercise: {synonym_of: exercises}))
+
+    if only_latest_pr
+      query = query.where(latest_pr: true)
+    end
+
+    query
   end
 end
