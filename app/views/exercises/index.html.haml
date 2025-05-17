@@ -14,6 +14,7 @@
           %th Synonyms
           %th Benchmark Lift
           %th Actions
+          %th Stats
       %tbody
         - exercises.each do |exercise|
           %tr
@@ -36,3 +37,7 @@
                     .input-group-append
                       = f.submit "Search", class: "btn btn-primary"
                 .search-results-container{ data: { exercise_search_target: "results" } }
+            %td
+              = link_to "Latest PRs", latest_pr_sets_path(exercise_id: exercise.id)
+              \|
+              = link_to "All Time PRs", pr_sets_path(exercise_id: exercise.id)
