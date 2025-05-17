@@ -2,10 +2,10 @@ require 'rails_helper'
 
 describe "PR display" do
   before :each do
-    @bench_press = Exercise.create!(name: "Bench Press")
+    @bench_press = Exercise.create!(name: "Bench Press", benchmark_lift: true)
     @bench = Exercise.create!(name: "Bench", synonym_of: @bench_press)
-    @deadlift = Exercise.create!(name: "Deadlift")
-    @squat = Exercise.create!(name: "Squat")
+    @deadlift = Exercise.create!(name: "Deadlift", benchmark_lift: true)
+    @squat = Exercise.create!(name: "Squat", benchmark_lift: true)
 
     @user = FactoryBot.create(:user)
     sign_in @user
