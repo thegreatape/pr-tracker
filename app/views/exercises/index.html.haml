@@ -1,33 +1,38 @@
-- exercises_by_benchmark_lift = @exercises.group_by {|exercise| exercise.benchmark_lift }
+.block{ data: { controller: "exercise-filter" } }
+  .field
+    .control
+      %input.input{ type: "text", placeholder: "Search exercises...", data: { exercise_filter_target: "input", action: "keyup->exercise-filter#filter" } }
 
-- exercises_by_benchmark_lift.sort_by {|benchmark_lift, _| benchmark_lift ? 0 : 1}.each do |benchmark_lift, exercises|
-  %h2.title.is-3= benchmark_lift ? "Benchmark Lifts" : "Other Lifts"
-  %table.table
-    %thead
-      %tr
-        %th Exercise
-        %th Synonyms
-        %th Benchmark Lift
-        %th Actions
-    %tbody
-      - exercises.each do |exercise|
+  - exercises_by_benchmark_lift = @exercises.group_by {|exercise| exercise.benchmark_lift }
+
+  - exercises_by_benchmark_lift.sort_by {|benchmark_lift, _| benchmark_lift ? 0 : 1}.each do |benchmark_lift, exercises|
+    %h2.title.is-3= benchmark_lift ? "Benchmark Lifts" : "Other Lifts"
+    %table.table{ data: { exercise_filter_target: "section" } }
+      %thead
         %tr
-          %td=exercise.name
-          %td
-            - exercise.synonyms.each do |synonym|
-              %div{ style: "display: flex; align-items: center; margin-bottom: 0.5rem;" }
-                %span{ style: "flex: 1;" }= synonym.name
-                = button_to unlink_synonym_exercise_path(exercise, synonym_id: synonym.id), method: :delete, class: "btn btn-sm btn-link text-danger", style: "padding: 0; margin-left: 0.5rem;", title: "Unlink synonym" do
-                  X
-          %td
-            = button_to toggle_benchmark_exercise_path(exercise), method: :post, class: "btn btn-sm #{exercise.benchmark_lift ? 'btn-outline-danger' : 'btn-outline-success'}", style: "margin-left: 0.5rem;" do
-              = exercise.benchmark_lift ? 'Remove as Benchmark' : 'Set as Benchmark'
-          %td
-            .exercise-search-container{ data: { controller: "exercise-search" } }
-              = form_with url: search_exercises_path, method: :get, data: { action: "submit->exercise-search#search" } do |f|
-                .input-group
-                  = f.text_field :query, class: "form-control", placeholder: "Search exercises...", data: { exercise_search_target: "query" }
-                  = f.hidden_field :exercise_id, value: exercise.id
-                  .input-group-append
-                    = f.submit "Search", class: "btn btn-primary"
-              .search-results-container{ data: { exercise_search_target: "results" } }
+          %th Exercise
+          %th Synonyms
+          %th Benchmark Lift
+          %th Actions
+      %tbody
+        - exercises.each do |exercise|
+          %tr
+            %td{ data: { exercise_filter_target: "exercise" } }=exercise.name
+            %td
+              - exercise.synonyms.each do |synonym|
+                %div{ style: "display: flex; align-items: center; margin-bottom: 0.5rem;" }
+                  %span{ style: "flex: 1;" }= synonym.name
+                  = button_to unlink_synonym_exercise_path(exercise, synonym_id: synonym.id), method: :delete, class: "btn btn-sm btn-link text-danger", style: "padding: 0; margin-left: 0.5rem;", title: "Unlink synonym" do
+                    X
+            %td
+              = button_to toggle_benchmark_exercise_path(exercise), method: :post, class: "btn btn-sm #{exercise.benchmark_lift ? 'btn-outline-danger' : 'btn-outline-success'}", style: "margin-left: 0.5rem;" do
+                = exercise.benchmark_lift ? 'Remove as Benchmark' : 'Set as Benchmark'
+            %td
+              .exercise-search-container{ data: { controller: "exercise-search" } }
+                = form_with url: search_exercises_path, method: :get, data: { action: "submit->exercise-search#search" } do |f|
+                  .input-group
+                    = f.text_field :query, class: "form-control", placeholder: "Search exercises...", data: { exercise_search_target: "query" }
+                    = f.hidden_field :exercise_id, value: exercise.id
+                    .input-group-append
+                      = f.submit "Search", class: "btn btn-primary"
+                .search-results-container{ data: { exercise_search_target: "results" } }
