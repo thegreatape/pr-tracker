@@ -1,18 +1,6 @@
 class PrSetsController < ApplicationController
   before_action :authenticate_user!
 
-  BENCHMARK_LIFTS = [
-    "Bench Press",
-    "Deadlift",
-    "Front Squat",
-    "Overhead Press",
-    "Safety Bar Squat",
-    "Squat",
-    "Trap Bar Deadlift",
-    "Log",
-    "Romanian Deadlift"
-  ]
-
   def index
     @title = "PRs"
     @pr_sets = pr_sets
@@ -26,7 +14,7 @@ class PrSetsController < ApplicationController
   private
 
   def pr_sets
-    exercises = Exercise.where(name: BENCHMARK_LIFTS)
+    exercises = Exercise.where(benchmark_lift: true)
     current_user
       .exercise_sets
       .pr_sets
