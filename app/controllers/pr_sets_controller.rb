@@ -20,7 +20,7 @@ class PrSetsController < ApplicationController
       .pr_sets
       .joins(:exercise, :workout)
       .where(exercise: exercises)
-      .or(current_user.exercise_sets.where(exercise: {synonym_of: exercises}))
+      .or(current_user.exercise_sets.pr_sets.where(exercise: {synonym_of: exercises}))
 
     if only_latest_pr
       query = query.where(latest_pr: true)
