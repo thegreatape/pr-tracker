@@ -248,13 +248,15 @@ describe PrFinder do
   end
 
   it "does not mark a set as a PR if it has 0 reps" do
-    exercise = Exercise.create!(name: "Deadlift")
-    workout = Workout.create!(date: Date.today, raw_text: "", user_id: @user.id)
-    set = ExerciseSet.create!(exercise: exercise, workout: workout, user: @user, reps: 0, weight_lbs: 300, line_number: 1)
+    today_workout_text = <<~WORKOUT
+    # Deadlift
+    300x0
+    WORKOUT
+    today_workout = Workout.create_from_parsed(Parser.new.parse(today_workout_text), Date.today, @user.id)
 
     PrFinder.update
 
-    expect(set.reload.pr).to be false
+    expect(today_workout.exercise_sets.first.pr).to be false
   end
 
   it "separates rep PRs by user" do

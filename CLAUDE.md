@@ -52,6 +52,10 @@ bundle exec rspec spec/path/to/file_spec.rb  # Run a single test file
 
 Single Sidekiq worker: `PrFinderWorker` — no queue, retry, or timeout configuration. Redis is required in development (`redis://localhost:6379/1`).
 
+## Testing Conventions
+
+`PrFinder` specs set up data using `Workout.create_from_parsed(Parser.new.parse(workout_text), date, user_id)` with inline heredoc workout text — not by constructing `Workout`/`ExerciseSet` records directly. This exercises the full parsing pipeline and keeps tests consistent with how data enters the system in production.
+
 ## Deployment
 
 Deployed on Render. See `render.yaml` for service definitions (web + Sidekiq worker + PostgreSQL + Redis). Production build runs `bin/render-build.sh`.
