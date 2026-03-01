@@ -57,6 +57,7 @@ class PrFinder
         from rep_maxes_in_workout
           join workouts on workout_id = workouts.id
         where weight_lbs is not null
+          and reps > 0
       ),
       maxes_with_previous_max as (
         select maxes_by_date.*,
